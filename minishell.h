@@ -20,10 +20,16 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
-	struct s_token	*next;	
-} t_token;
+	struct s_token	*next;
+	bool			single_quote;
+	bool			double_quote;
+	char			*input;
+	char			*start;
+	size_t			pos;
+	size_t			anchor_pos;
+} t_t;
 
 
-t_token	*tokens(char *imput);
+t_token	*tokens(char *input);
 
 # endif

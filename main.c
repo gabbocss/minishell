@@ -6,14 +6,14 @@ int	main(int argc, char *argv[], char **envp)
 	(void)argv;
 	(void)envp;
 	char *input;
-	t_token *token;
+	t_token *t;
 
 	while(1)
 	{
 		input = readline("minishell$ ");
 		if (!input)
 		{
-			printf("exit\n");
+			ft_printf("exit\n");
 			break ;
 		}
 		if (*input != '\0')
