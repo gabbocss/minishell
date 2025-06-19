@@ -3,6 +3,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
 
 
 typedef enum token_type
@@ -39,5 +41,7 @@ void	metacharacters(t_t *t, t_t **token_list);
 void	open_quotes(t_t *t, t_t **token_list);
 void	add_token(t_t *t, t_t **token_list);
 void	initStruct(t_t *t);
+void print_arguments(t_t *token_list); // borrar
+void	add_token_2(t_t *new_token, t_t **token_list);
 
 # endif

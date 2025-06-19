@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "libft.h"
 
 void	quotes(t_t *t)
 {
@@ -6,14 +7,12 @@ void	quotes(t_t *t)
 		|| t->input[t->pos -1] != '\\'))
 	{
 		t->single_quote = !t->single_quote;
-		t->anchor_pos = t->pos;
 		t->pos++;
 	}
 	else if ((t->input[t->pos] == '\"' && !t->single_quote) && (t->start == t->input
 		|| t->input[t->pos -1] != '\\'))
 	{
 		t->double_quote = !t->double_quote;
-		t->anchor_pos = t->pos;
 		t->pos++;
 	}
 }
@@ -37,6 +36,7 @@ void	open_quotes(t_t *t, t_t **token_list)
 			{
 				t->single_quote = !t->single_quote;
 				add_token(t, token_list);
+				return ;
 			}
 			t->pos++;
 		}
@@ -47,6 +47,7 @@ void	open_quotes(t_t *t, t_t **token_list)
 			{
 				t->double_quote = !t->double_quote;
 				add_token(t, token_list);
+				return ;
 			}
 			t->pos++;
 		}
@@ -58,19 +59,20 @@ void add_token(t_t *t, t_t **token_list)
 	size_t	len;
 	t_t *new_token;
 
-	len = t->pos - t->anchor_pos;
+	len = t->pos - t->anchor_pos;	
 	new_token = malloc(sizeof(t_t));
 	if (!new_token)
 		return ;
-	new_token->value = malloc(len +1);
+	new_token->value = malloc(len +2);
 	if (!new_token->value)
 	{
 		free(new_token->value);
 		free(new_token);
 		return ;
 	}
-	ft_strlcpy(new_token->value, t->start, len +1);
-	if (ft_strchr("|<>"), new_token->value[0])
+	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +2);
+	t->anchor_pos = t->pos;
+	if (ft_strchr(("|<>"), new_token->value[0]))
 		new_token->type = METACHAR;
 	else
 		new_token->type = WORD;

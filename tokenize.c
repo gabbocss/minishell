@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "libft.h"
 
 void	initStruct(t_t *t)
 {
@@ -34,9 +35,10 @@ t_t*tokens(char *input)
 	}
 	if (t.single_quote || t.double_quote)
 	{
-		ft_printf("minishell: syntax error near unexpected EOF");
-		return ;
+		ft_printf("minishell: syntax error near unexpected EOF\n");
+		return (0);
 	}
+	 return (token_list);
 }
 
 
