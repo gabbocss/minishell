@@ -7,6 +7,8 @@
 
 typedef enum token_type
 {
+	WORD,
+	METACHAR,
 	TOKEN_DEFAULT,
 	TOKEN_WORD,
 	TOKEN_PIPE,
@@ -35,6 +37,7 @@ t_t	*tokens(char *input);
 void	quotes(t_t *t);
 void	metacharacters(t_t *t, t_t **token_list);
 void	open_quotes(t_t *t, t_t **token_list);
-void add_token(t_t *t, t_t **token_list);
+void	add_token(t_t *t, t_t **token_list);
+void	initStruct(t_t *t);
 
 # endif

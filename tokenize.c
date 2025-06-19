@@ -19,6 +19,7 @@ t_t*tokens(char *input)
 	t_t *token_list;
 	
 	initStruct(&t);
+	token_list = NULL;
 	t.input = input;
 	t.start = input;
 

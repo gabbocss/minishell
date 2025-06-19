@@ -24,7 +24,7 @@ void	metacharacters(t_t *t, t_t **token_list)
 		return ;
 	if (t->input[t->pos] == ' ' || t->input[t->pos] == '|' || t->input[t->pos] == '<'
 		|| t->input[t->pos] == '>')
-		add_token();
+		add_token(t, token_list);
 	t->pos++;
 }
 
@@ -36,7 +36,7 @@ void	open_quotes(t_t *t, t_t **token_list)
 			if (t->input[t->pos] == '\'' && t->input[t->pos -1] != '\\')
 			{
 				t->single_quote = !t->single_quote;
-				add_token();
+				add_token(t, token_list);
 			}
 			t->pos++;
 		}
@@ -46,7 +46,7 @@ void	open_quotes(t_t *t, t_t **token_list)
 			if (t->input[t->pos] == '\"' && t->input[t->pos -1] != '\\')
 			{
 				t->double_quote = !t->double_quote;
-				add_token();
+				add_token(t, token_list);
 			}
 			t->pos++;
 		}
