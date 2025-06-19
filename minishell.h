@@ -7,6 +7,7 @@
 
 typedef enum token_type
 {
+	TOKEN_DEFAULT,
 	TOKEN_WORD,
 	TOKEN_PIPE,
 	TOKEN_REDIR_IN,
@@ -30,6 +31,10 @@ typedef struct s_token
 } t_t;
 
 
-t_token	*tokens(char *input);
+t_t	*tokens(char *input);
+void	quotes(t_t *t);
+void	metacharacters(t_t *t, t_t **token_list);
+void	open_quotes(t_t *t, t_t **token_list);
+void add_token(t_t *t, t_t **token_list);
 
 # endif
