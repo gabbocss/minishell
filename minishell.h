@@ -41,7 +41,8 @@ void	metacharacters(t_t *t, t_t **token_list);
 void	open_quotes(t_t *t, t_t **token_list);
 void	add_token(t_t *t, t_t **token_list);
 void	initStruct(t_t *t);
-void print_arguments(t_t *token_list); // borrar
+void print_arguments(t_t *token_list); // per i test, cancellare alla fine
 void	add_token_2(t_t *new_token, t_t **token_list);
+int		alloc_new_token(t_t **new_token, int len);
 
 # endif

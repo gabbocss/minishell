@@ -19,12 +19,14 @@ void	quotes(t_t *t)
 
 void	metacharacters(t_t *t, t_t **token_list)
 {
-	if (t->input[t->pos] == '\'' || t->input[t->pos] == '\"')
-		return ;
-	if (t->input[t->pos] == ' ' || t->input[t->pos] == '|' || t->input[t->pos] == '<'
-		|| t->input[t->pos] == '>')
-		add_token(t, token_list);
-	t->pos++;
+	
+	if (t->input[t->pos])
+	{
+		if (t->input[t->pos] == ' ' || t->input[t->pos] == '|' || t->input[t->pos] == '<'
+			|| t->input[t->pos] == '>')
+			add_token(t, token_list);
+		t->pos++;
+	}
 }
 
 void	open_quotes(t_t *t, t_t **token_list)
@@ -58,20 +60,17 @@ void add_token(t_t *t, t_t **token_list)
 {
 	size_t	len;
 	t_t *new_token;
-
-	len = t->pos - t->anchor_pos;	
-	new_token = malloc(sizeof(t_t));
-	if (!new_token)
+	int check_memory;
+	if (t->start[t->anchor_pos] == ' ' && t->pos != t->anchor_pos)
+		t->anchor_pos++;
+	len = t->pos - t->anchor_pos;
+	if (len == 0)
 		return ;
-	new_token->value = malloc(len +2);
-	if (!new_token->value)
-	{
-		free(new_token->value);
-		free(new_token);
+	check_memory = alloc_new_token(&new_token, len);
+	if (check_memory == 0)
 		return ;
-	}
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +2);
-	t->anchor_pos = t->pos;
+	t->anchor_pos = t->pos +1; // il +1 è per non ripettere l'ultimo carattere
 	if (ft_strchr(("|<>"), new_token->value[0]))
 		new_token->type = METACHAR;
 	else

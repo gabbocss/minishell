@@ -31,7 +31,8 @@ t_t*tokens(char *input)
 			open_quotes(&t, &token_list);
 		if(t.input[t.pos])
 			metacharacters(&t, &token_list);
-		t.pos++;
+		if (!t.input[t.pos] && t.pos != t.anchor_pos)
+			add_token(&t, &token_list);
 	}
 	if (t.single_quote || t.double_quote)
 	{
@@ -40,6 +41,3 @@ t_t*tokens(char *input)
 	}
 	 return (token_list);
 }
-
-
-
