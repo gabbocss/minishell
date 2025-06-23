@@ -15,7 +15,7 @@ void	initStruct(t_t *t)
 	t->error= false;
 }
 
-t_t*tokens(char *input)
+t_t	*tokens(char *input)
 {
 	t_t t;
 	t_t *token_list;
@@ -41,9 +41,33 @@ t_t*tokens(char *input)
 			ft_printf("minishell: syntax error near unexpected EOF\n");
 		return (0);
 	}
-	 return (token_list);
+	 return (set_metachar_type(&token_list));
 }
+t_t	*set_metachar_type(t_t **token_list)
+{
+	t_t *temp;
 
+	temp = *token_list;
+	while(temp)
+	{
+		if (temp->type == METACHAR)
+		{
+			if (ft_strncmp(temp->value, "|", 1) == 0)
+				temp->type = TOKEN_PIPE;
+			else if (ft_strncmp(temp->value, "<<", 3) == 0)
+				temp->type = TOKEN_DOUBLE_REDIR_IN;
+			else if (ft_strncmp(temp->value, "<", 1) == 0)
+				temp->type = TOKEN_REDIR_IN;
+			else if (ft_strncmp(temp->value, ">>", 3) == 0)
+				temp->type = TOKEN_DOUBLE_REDIR_OUT;
+			else if (ft_strncmp(temp->value, ">", 1) == 0)
+				temp->type = TOKEN_REDIR_OUT;
+			
+		}
+		temp = temp->next;
+	}
+	return (*token_list);
+}
 void	triple_meta(t_t *t, t_t **token_list)
 {
 	if (t->input[t->pos] == '<')
