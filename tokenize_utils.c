@@ -22,9 +22,26 @@ void	metacharacters(t_t *t, t_t **token_list)
 	
 	if (t->input[t->pos])
 	{
-		if (t->input[t->pos] == ' ' || t->input[t->pos] == '|' || t->input[t->pos] == '<'
-			|| t->input[t->pos] == '>')
+		if (t->input[t->pos] == ' ' || t->input[t->pos] == '|')
 			add_token(t, token_list);
+		else if (t->input[t->pos] == '<' && t->input[t->pos +1] != '<')
+			add_token(t, token_list);
+		else if (t->input[t->pos] == '>' && t->input[t->pos +1] != '>')
+			add_token(t, token_list);
+		else if (t->input[t->pos] == '<' && t->input[t->pos +1] == '<'
+		&& t->input[t->pos +2] != '<' )
+			{
+				t->pos++;
+				add_token(t, token_list);
+			}
+		else if (t->input[t->pos] == '>' && t->input[t->pos +1] == '>'
+		&& t->input[t->pos +2] != '>')
+			{
+				t->pos++;
+				add_token(t, token_list);
+			}
+		else
+			triple_meta(t, token_list);
 		t->pos++;
 	}
 }
@@ -70,7 +87,7 @@ void add_token(t_t *t, t_t **token_list)
 	if (check_memory == 0)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +2);
-	t->anchor_pos = t->pos +1; // il +1 è per non ripettere l'ultimo carattere
+	t->anchor_pos = t->pos +1;	// il +1 è per non ripettere l'ultimo carattere
 	if (ft_strchr(("|<>"), new_token->value[0]))
 		new_token->type = METACHAR;
 	else

@@ -32,6 +32,7 @@ typedef struct s_token
 	char			*start;
 	size_t			pos;
 	size_t			anchor_pos;
+	bool			error;
 } t_t;
 
 
@@ -44,5 +45,6 @@ void	initStruct(t_t *t);
 void print_arguments(t_t *token_list); // per i test, cancellare alla fine
 void	add_token_2(t_t *new_token, t_t **token_list);
 int		alloc_new_token(t_t **new_token, int len);
+void	triple_meta(t_t *t, t_t **token_list);
 
 # endif

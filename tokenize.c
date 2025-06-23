@@ -12,6 +12,7 @@ void	initStruct(t_t *t)
 	t->start = NULL;
 	t->pos = 0;
 	t->anchor_pos = 0;
+	t->error= false;
 }
 
 t_t*tokens(char *input)
@@ -24,7 +25,7 @@ t_t*tokens(char *input)
 	t.input = input;
 	t.start = input;
 
-	while(t.input[t.pos])
+	while(t.input[t.pos] && !t.error)
 	{
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
@@ -34,10 +35,38 @@ t_t*tokens(char *input)
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
 			add_token(&t, &token_list);
 	}
-	if (t.single_quote || t.double_quote)
+	if (t.single_quote || t.double_quote || t.error)
 	{
-		ft_printf("minishell: syntax error near unexpected EOF\n");
+		if (t.single_quote || t.double_quote)
+			ft_printf("minishell: syntax error near unexpected EOF\n");
 		return (0);
 	}
 	 return (token_list);
+}
+
+void	triple_meta(t_t *t, t_t **token_list)
+{
+	if (t->input[t->pos] == '<')
+    {
+        if (t->input[t->pos + 1] == '<' && t->input[t->pos + 2] == '<')
+        {
+            ft_printf("minishell: syntax error near unexpected token `<<<'\n");
+            t->pos += 2;
+			t->error = true;
+			add_token(t, token_list);
+            return ;
+        }
+	}
+     
+    else if (t->input[t->pos] == '>')
+    {
+        if (t->input[t->pos + 1] == '>' && t->input[t->pos + 2] == '>')
+        {
+            ft_printf("minishell: syntax error near unexpected token `>>>'\n");
+            t->pos += 2;
+			t->error = true;
+			add_token(t, token_list);
+            return ;
+		}
+	}
 }
