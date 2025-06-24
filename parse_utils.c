@@ -24,7 +24,7 @@ t_command	*parse_commands(t_t *token)
 			parse_commands_2(&current, &head, token);
 		token = token->next;
 	}
-	if (current && !token->error)
+	if (current && (!token || !token->error))
 		add_pipe(&head, current);
 	return (head);
 }
@@ -39,7 +39,12 @@ void	parse_commands_2(t_command **current, t_command **head, t_t *token)
 		add_pipe(head, *current);
 		*current = NULL;
 	}
-		
+	if (token->error)
+	{
+		if (*current)
+			free_command(*current);
+		free_command_list(*head);
+	}
 }
 
 void	add_argument(t_command *cmd, char *arg)
@@ -79,7 +84,6 @@ void redir_in(t_command *cmd, t_t *token)
     else
     {
         ft_printf("minishell: syntax error near unexpected token\n"); 
-    	free_token_list(token);
         token->error = true;
     }
 }
@@ -96,7 +100,6 @@ void redir_out(t_command *cmd, t_t *token)
     }
     else
     {
-    	free_token_list(token);
         ft_printf("minishell: syntax error near unexpected token\n");
         token->error = true;
     }
