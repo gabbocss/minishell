@@ -91,7 +91,7 @@ void add_token(t_t *t, t_t **token_list)
 	if (ft_strchr(("|<>"), new_token->value[0]))
 		new_token->type = METACHAR;
 	else
-		new_token->type = WORD;
+		new_token->type = TOKEN_WORD;
 	new_token->next = NULL;
 	add_token_2(new_token, token_list);
 }

@@ -9,7 +9,6 @@
 
 typedef enum token_type
 {
-	WORD,
 	METACHAR,
 	TOKEN_DEFAULT,
 	TOKEN_WORD,
@@ -37,17 +36,28 @@ typedef struct s_token
 	bool			error;
 } t_t;
 
+typedef struct s_command 
+{
+    char				**argv;        
+    char				*infile;       
+    char				*outfile;      
+    int					redir_in;      
+    int					redir_out;     
+    struct s_command	*next;
+} t_command;
 
 t_t	*tokens(char *input);
-void	quotes(t_t *t);
-void	metacharacters(t_t *t, t_t **token_list);
-void	open_quotes(t_t *t, t_t **token_list);
-void	add_token(t_t *t, t_t **token_list);
-void	initStruct(t_t *t);
+void		quotes(t_t *t);
+void		metacharacters(t_t *t, t_t **token_list);
+void		open_quotes(t_t *t, t_t **token_list);
+void		add_token(t_t *t, t_t **token_list);
+void		initStruct(t_t *t);
 void print_arguments(t_t *token_list); // per i test, cancellare alla fine
-void	add_token_2(t_t *new_token, t_t **token_list);
-int		alloc_new_token(t_t **new_token, int len);
-void	triple_meta(t_t *t, t_t **token_list);
-t_t		*set_metachar_type(t_t **token_list);
-
+void		add_token_2(t_t *new_token, t_t **token_list);
+int			alloc_new_token(t_t **new_token, int len);
+void		triple_meta(t_t *t, t_t **token_list);
+t_t			*set_metachar_type(t_t **token_list);
+t_command	*parse_commands(t_t *token);
+t_command	*parse_commands_2(t_t *token);
+void		add_argument(t_command *cmd, char *arg);
 # endif

@@ -6,7 +6,7 @@ void print_arguments(t_t *token_list) {
     while (token_list) {
         printf("Arg[%d]: %-10s | Tipo: ", i, token_list->value);
         switch (token_list->type) {
-            case WORD:
+            case TOKEN_WORD:
                 printf("WORD\n");
                 break;
             case METACHAR:
@@ -65,7 +65,7 @@ int	main(int argc, char *argv[], char **envp)
 			add_history(input);
 		token = tokens(input);
 		if (token)
-    		print_arguments(token);
+    		parse(token);
 		free(input);
 	}
 }
