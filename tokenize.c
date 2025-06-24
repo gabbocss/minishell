@@ -12,7 +12,7 @@ void	initStruct(t_t *t)
 	t->start = NULL;
 	t->pos = 0;
 	t->anchor_pos = 0;
-	t->error= false;
+	t->error = false;
 }
 
 t_t	*tokens(char *input)

@@ -8,7 +8,7 @@ t_command	*parse_commands(t_t *token)
 
 	head = NULL;
 	current = NULL;
-	while(token)
+	while(token && !token->error)
 	{
 		if (!current)
 		{
@@ -19,20 +19,27 @@ t_command	*parse_commands(t_t *token)
 			add_argument(current, token->value);
 		else if (token->type == TOKEN_REDIR_IN
 		|| token->type == TOKEN_DOUBLE_REDIR_IN)
-			redir_in(current, token->value, token->next->value);
+			redir_in(current, token);
 		else
 			parse_commands_2(&current, &head, token);
 		token = token->next;
 	}
+	if (current && !token->error)
+		add_pipe(&head, current);
+	return (head);
 }
 
-void	*parse_commands_2(t_command **current, t_command **head, t_t *token)
+void	parse_commands_2(t_command **current, t_command **head, t_t *token)
 {
 	if (token->type == TOKEN_REDIR_OUT
 		|| token->type == TOKEN_DOUBLE_REDIR_OUT)
-			redir_out(current, token->value, token->next->value);
-		else if (token->type == TOKEN_PIPE)
-			add_pipe(&head, current);
+			redir_out(*current, token);
+	else if (token->type == TOKEN_PIPE)
+	{
+		add_pipe(head, *current);
+		*current = NULL;
+	}
+		
 }
 
 void	add_argument(t_command *cmd, char *arg)
@@ -58,3 +65,40 @@ void	add_argument(t_command *cmd, char *arg)
 	free(cmd->argv);
 	cmd->argv = new_argv;
 }
+
+void redir_in(t_command *cmd, t_t *token)	
+{
+    if (token->next && token->next->type == TOKEN_WORD)
+    {
+        cmd->infile = ft_strdup(token->next->value);
+		if (token->type == TOKEN_REDIR_IN)
+			cmd->redir_in = 1;
+		else
+			cmd->redir_in = 2;
+    }
+    else
+    {
+        ft_printf("minishell: syntax error near unexpected token\n"); 
+    	free_token_list(token);
+        token->error = true;
+    }
+}
+
+void redir_out(t_command *cmd, t_t *token)	
+{
+    if (token->next && token->next->type == TOKEN_WORD)
+    {
+        cmd->infile = ft_strdup(token->next->value);
+		if (token->type == TOKEN_REDIR_OUT)
+			cmd->redir_in = 1;
+		else
+			cmd->redir_in = 2;
+    }
+    else
+    {
+    	free_token_list(token);
+        ft_printf("minishell: syntax error near unexpected token\n");
+        token->error = true;
+    }
+}
+
