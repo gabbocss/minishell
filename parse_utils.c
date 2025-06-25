@@ -17,14 +17,13 @@ t_command	*parse_commands(t_t *token)
 		}
 		if (token->type == TOKEN_WORD)
 			add_argument(current, token->value);
-		else if (token->type == TOKEN_REDIR_IN
-		|| token->type == TOKEN_DOUBLE_REDIR_IN)
-			redir_in(current, token);
+		
 		else
 			parse_commands_2(&current, &head, token);
+		if (check_errorNclose(&head, current, token->error))
+			return (NULL);
 		token = token->next;
 	}
-	check_errorNclose()
 	if (current && (!token || !token->error))
 		add_pipe(&head, current);
 	return (head);
@@ -35,17 +34,15 @@ void	parse_commands_2(t_command **current, t_command **head, t_t *token)
 	if (token->type == TOKEN_REDIR_OUT
 		|| token->type == TOKEN_DOUBLE_REDIR_OUT)
 			redir_out(*current, token);
+	else if (token->type == TOKEN_REDIR_IN
+		|| token->type == TOKEN_DOUBLE_REDIR_IN)
+			redir_in(*current, token);
 	else if (token->type == TOKEN_PIPE)
 	{
 		add_pipe(head, *current);
 		*current = NULL;
 	}
-	if (token->error)
-	{
-		if (*current)
-			free_command(*current);
-		free_command_list(*head);
-	}
+	
 }
 
 void	add_argument(t_command *cmd, char *arg)

@@ -67,5 +67,5 @@ void print_commands(t_command *cmd); // per i test, cancellare alla fine
 void 		free_command_list(t_command *cmd);
 void 		free_token_list(t_t *token);
 void		free_command(t_command *cmd);
-
+bool		check_errorNclose(t_command **head, t_command *current, bool error);
 # endif
