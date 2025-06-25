@@ -9,6 +9,7 @@ void	parse(t_t *token)
 	token->error = false;
 	
 	cmd_list = parse_commands(token);
+	printf("Parse:: El valor es: %s\n", token->error ? "true" : "false");
 	if (token->error == true)
 	{
 		ft_printf("aqui");

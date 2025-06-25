@@ -24,6 +24,7 @@ t_command	*parse_commands(t_t *token)
 			parse_commands_2(&current, &head, token);
 		token = token->next;
 	}
+	check_errorNclose()
 	if (current && (!token || !token->error))
 		add_pipe(&head, current);
 	return (head);
