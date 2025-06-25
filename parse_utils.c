@@ -4,7 +4,7 @@
 t_command	*parse_commands(t_t *token)
 {
 	t_command *head;
-    t_command *current;
+	t_command *current;
 
 	head = NULL;
 	current = NULL;
@@ -71,35 +71,35 @@ void	add_argument(t_command *cmd, char *arg)
 
 void redir_in(t_command *cmd, t_t *token)	
 {
-    if (token->next && token->next->type == TOKEN_WORD)
-    {
-        cmd->infile = ft_strdup(token->next->value);
+	if (token->next && token->next->type == TOKEN_WORD)
+	{
+		cmd->infile = ft_strdup(token->next->value);
 		if (token->type == TOKEN_REDIR_IN)
 			cmd->redir_in = 1;
 		else
 			cmd->redir_in = 2;
-    }
-    else
-    {
-        ft_printf("minishell: syntax error near unexpected token\n"); 
-        token->error = true;
-    }
+	}
+	else
+	{
+		ft_printf("minishell: syntax error near unexpected token\n"); 
+		token->error = true;
+	}
 }
 
 void redir_out(t_command *cmd, t_t *token)	
 {
-    if (token->next && token->next->type == TOKEN_WORD)
-    {
-        cmd->infile = ft_strdup(token->next->value);
+	if (token->next && token->next->type == TOKEN_WORD)
+	{
+		cmd->infile = ft_strdup(token->next->value);
 		if (token->type == TOKEN_REDIR_OUT)
 			cmd->redir_in = 1;
 		else
 			cmd->redir_in = 2;
-    }
-    else
-    {
-        ft_printf("minishell: syntax error near unexpected token\n");
-        token->error = true;
-    }
+	}
+	else
+	{
+		ft_printf("minishell: syntax error near unexpected token\n");
+		token->error = true;
+	}
 }
 
