@@ -71,26 +71,50 @@ t_t	*set_metachar_type(t_t **token_list)
 void	triple_meta(t_t *t, t_t **token_list)
 {
 	if (t->input[t->pos] == '<')
-    {
-        if (t->input[t->pos + 1] == '<' && t->input[t->pos + 2] == '<')
-        {
-            ft_printf("minishell: syntax error near unexpected token `<<<'\n");
-            t->pos += 2;
+	{
+		if (t->input[t->pos + 1] == '<' && t->input[t->pos + 2] == '<')
+		{
+			ft_printf("minishell: syntax error near unexpected token\n");
+			t->pos += 2;
 			t->error = true;
 			add_token(t, token_list);
-            return ;
-        }
+			return ;
+		}
 	}
-     
-    else if (t->input[t->pos] == '>')
-    {
-        if (t->input[t->pos + 1] == '>' && t->input[t->pos + 2] == '>')
-        {
-            ft_printf("minishell: syntax error near unexpected token `>>>'\n");
-            t->pos += 2;
+	 
+	else if (t->input[t->pos] == '>')
+	{
+		if (t->input[t->pos + 1] == '>' && t->input[t->pos + 2] == '>')
+		{
+			ft_printf("minishell: syntax error near unexpected token\n");
+			t->pos += 2;
 			t->error = true;
 			add_token(t, token_list);
-            return ;
+			return ;
 		}
 	}
 }
+
+void    check_pipes(t_t *t, t_t **token_list)
+{
+    size_t  start;
+    char    *word;
+
+    start = t->pos;
+    word = NULL;
+    if (t->input[t->pos] == '|')
+    {
+
+        while (start > 0 && t->input[start - 1] != ' ' &&
+               t->input[start - 1] != '|' && t->input[start - 1] != '<' &&
+               t->input[start - 1] != '>')
+            start--;
+		check_pipes_2(t, token_list, start, word);
+    }
+    else
+        add_token(t, token_list);
+	
+}
+
+
+

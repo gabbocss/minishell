@@ -68,4 +68,7 @@ void 		free_command_list(t_command *cmd);
 void 		free_token_list(t_t *token);
 void		free_command(t_command *cmd);
 bool		check_errorNclose(t_command **head, t_command *current, bool error);
+void		check_pipes(t_t *t, t_t **token_list);
+void    	check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word);
+void		add_custom_token(char *value, int type, t_t **token_list);
 # endif
