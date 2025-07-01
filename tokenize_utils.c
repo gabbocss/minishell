@@ -57,11 +57,19 @@ void	open_quotes(t_t *t, t_t **token_list)
 				t->single_quote = !t->single_quote;
 				t->anchor_pos++;
 				add_token(t, token_list);
-				t->pos += 1;
+				t->pos += 2;
 				t->anchor_pos = t->pos;
 				return ;
 			}
-			//if (t->double_quote && t->input[t->pos] == '\"' && t->input[t->pos -1] != '\\')
+			else if (t->double_quote && t->input[t->pos] == '\"'&& t->input[t->pos -1] != '\\')
+			{
+				t->double_quote = !t->double_quote;
+				t->anchor_pos++;
+				add_token(t, token_list);
+				t->pos += 2;
+				t->anchor_pos = t->pos;
+				return ;
+			}
 			t->pos++;
 		}
 	t->pos++;
@@ -77,7 +85,10 @@ void add_token(t_t *t, t_t **token_list)
 		t->anchor_pos++;
 	len = t->pos - t->anchor_pos;
 	if (len == 0)
+	{
+		t->anchor_pos++;
 		return;
+	}
 	check_memory = alloc_new_token(&new_token, len);
 	if (check_memory == 0)
 		return ;
@@ -90,12 +101,12 @@ void add_token(t_t *t, t_t **token_list)
 		new_token->type = TOKEN_WORD;
 		new_token->error = false;
 	}
-	new_token->next = NULL;
 	add_token_2(new_token, token_list);
 }
 
 void add_token_2(t_t *new_token, t_t **token_list)
 {
+	new_token->next = NULL;
 	if (*token_list == NULL) {
         *token_list = new_token;
     } else {
