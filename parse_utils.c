@@ -73,6 +73,7 @@ void redir_in(t_command *cmd, t_t *token)
 {
 	if (token->next && token->next->type == TOKEN_WORD)
 	{
+		ft_printf("1111111111111\n");
 		cmd->infile = ft_strdup(token->next->value);
 		if (token->type == TOKEN_REDIR_IN)
 			cmd->redir_in = 1;
@@ -81,6 +82,7 @@ void redir_in(t_command *cmd, t_t *token)
 	}
 	else
 	{
+		ft_printf("hoaew");
 		ft_printf("minishell: syntax error near unexpected token\n"); 
 		token->error = true;
 	}

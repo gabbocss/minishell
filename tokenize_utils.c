@@ -77,25 +77,29 @@ void	open_quotes(t_t *t, t_t **token_list)
 
 void add_token(t_t *t, t_t **token_list)
 {
-	
 	size_t	len;
 	t_t *new_token;
 	int check_memory;
 	while (t->input[t->anchor_pos] == ' ' && t->anchor_pos < t->pos)
 		t->anchor_pos++;
 	len = t->pos - t->anchor_pos;
-	if (len == 0)
+	if (len == 0 && t->input[t->anchor_pos] == ' ')
 	{
 		t->anchor_pos++;
 		return;
 	}
+	
 	check_memory = alloc_new_token(&new_token, len);
 	if (check_memory == 0)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
+	
 	if (ft_strchr(("|<>"), new_token->value[0]))
+	{
 		new_token->type = METACHAR;
+		printf("t->type:: %d\n", new_token->type);
+	}
 	else
 	{
 		new_token->type = TOKEN_WORD;
