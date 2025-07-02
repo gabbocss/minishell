@@ -25,7 +25,7 @@ void	metacharacters(t_t *t, t_t **token_list)
 		if (t->input[t->pos] == ' ' || t->input[t->pos] == '|')
 			check_pipes(t, token_list);
 		else if (t->input[t->pos] == '<' && t->input[t->pos +1] != '<')
-			add_token(t, token_list);
+			add_token(t, token_list);			
 		else if (t->input[t->pos] == '>' && t->input[t->pos +1] != '>')
 			add_token(t, token_list);
 		else if (t->input[t->pos] == '<' && t->input[t->pos +1] == '<'
@@ -33,12 +33,14 @@ void	metacharacters(t_t *t, t_t **token_list)
 			{
 				t->pos++;
 				add_token(t, token_list);
+				t->anchor_pos = t->pos +1;
 			}
 		else if (t->input[t->pos] == '>' && t->input[t->pos +1] == '>'
 		&& t->input[t->pos +2] != '>')
 			{
 				t->pos++;
 				add_token(t, token_list);
+				t->anchor_pos = t->pos +1;
 			}
 		else
 			triple_meta(t, token_list);
@@ -94,12 +96,8 @@ void add_token(t_t *t, t_t **token_list)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
-	
 	if (ft_strchr(("|<>"), new_token->value[0]))
-	{
 		new_token->type = METACHAR;
-		printf("t->type:: %d\n", new_token->type);
-	}
 	else
 	{
 		new_token->type = TOKEN_WORD;
