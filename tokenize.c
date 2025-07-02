@@ -55,9 +55,18 @@ t_t	*set_metachar_type(t_t **token_list)
 			if (ft_strncmp(temp->value, "|", 1) == 0)
 				temp->type = TOKEN_PIPE;
 			else if (ft_strncmp(temp->value, "<<", 3) == 0)
+			{
 				temp->type = TOKEN_DOUBLE_REDIR_IN;
+				ft_printf("aqui");
+			}
+				
 			else if (ft_strncmp(temp->value, "<", 1) == 0)
+			{
+				ft_printf("temp->value:: %s\n", temp->value);
+				ft_printf("una sola");
 				temp->type = TOKEN_REDIR_IN;
+			}
+				
 			else if (ft_strncmp(temp->value, ">>", 3) == 0)
 				temp->type = TOKEN_DOUBLE_REDIR_OUT;
 			else if (ft_strncmp(temp->value, ">", 1) == 0)
