@@ -19,6 +19,7 @@ typedef enum token_type
 	TOKEN_END,
 	TOKEN_DOUBLE_REDIR_IN,
 	TOKEN_DOUBLE_REDIR_OUT,
+	TOKEN_VAR,
 } t_token_type;
 
 
@@ -72,4 +73,5 @@ void		check_pipes(t_t *t, t_t **token_list);
 void    	check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word);
 void		add_custom_token(char *value, int type, t_t **token_list);
 void		is_var(t_t *t, t_t **token_list);
+void		is_var_2(t_t *t, t_t **token_list);
 # endif

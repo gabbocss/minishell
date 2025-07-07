@@ -15,7 +15,7 @@ t_command	*parse_commands(t_t *token)
 			current = malloc(sizeof(t_command));
 			ft_bzero(current, sizeof(t_command));
 		}
-		if (token->type == TOKEN_WORD)
+		if (token->type == TOKEN_WORD || TOKEN_VAR)
 			add_argument(current, token->value);
 		
 		else

@@ -31,7 +31,8 @@ t_t	*tokens(char *input)
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);
 		if(t.input[t.pos]){
-			is_var(&t, &token_list);
+			if (t.input[t.pos] == '$')
+				is_var(&t, &token_list);
 			metacharacters(&t, &token_list);}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
 			add_token(&t, &token_list);
@@ -72,6 +73,7 @@ t_t	*set_metachar_type(t_t **token_list)
 			
 		}
 		temp = temp->next;
+		
 	}
 	return (*token_list);
 }
