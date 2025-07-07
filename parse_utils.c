@@ -86,7 +86,7 @@ void redir_in(t_command *cmd, t_t *token)
 	}
 }
 
-void redir_out(t_command *cmd, t_t *token)	
+void redir_out(t_command *cmd, t_t *token)
 {
 	if (token->next && token->next->type == TOKEN_WORD)
 	{

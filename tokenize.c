@@ -30,8 +30,9 @@ t_t	*tokens(char *input)
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);
-		if(t.input[t.pos])
-			metacharacters(&t, &token_list);
+		if(t.input[t.pos]){
+			is_var(&t, &token_list);
+			metacharacters(&t, &token_list);}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
 			add_token(&t, &token_list);
 	}
@@ -57,13 +58,10 @@ t_t	*set_metachar_type(t_t **token_list)
 			else if (ft_strncmp(temp->value, "<<", 3) == 0)
 			{
 				temp->type = TOKEN_DOUBLE_REDIR_IN;
-				ft_printf("aqui");
 			}
 				
 			else if (ft_strncmp(temp->value, "<", 1) == 0)
 			{
-				ft_printf("temp->value:: %s\n", temp->value);
-				ft_printf("una sola");
 				temp->type = TOKEN_REDIR_IN;
 			}
 				

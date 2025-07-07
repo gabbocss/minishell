@@ -53,3 +53,26 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 		tmp->next = new_token;
 	}
 }
+void    is_var(t_t *t, t_t **token_list)
+{
+	char	*var_temp;
+	char	*var;
+	char	*var_word;
+    if (t->input[t->anchor_pos] == '$')
+	{
+		if (t->pos == t->anchor_pos)
+			t->pos++;
+		while (t->input[t->pos] && (ft_isalnum(t->input[t->pos]) || t->input[t->pos] == '_'))
+			t->pos++;
+		var_temp = malloc(t->pos - t->anchor_pos +1);
+		ft_strlcpy(var_temp, t->input + (t->anchor_pos +1), (t->pos - t->anchor_pos) +1);
+		var = getenv(var_temp);
+		if (var)
+		{
+			var_word = ft_strdup(var);
+			ft_printf("var_word:: %s\n", var_word);
+		}
+		t->anchor_pos = t->pos;
+	}
+
+}

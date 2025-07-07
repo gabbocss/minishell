@@ -45,7 +45,6 @@ void	metacharacters(t_t *t, t_t **token_list)
 		else
 			triple_meta(t, token_list);
 		t->pos++;
-		
 	}
 }
 
@@ -92,7 +91,6 @@ void add_token(t_t *t, t_t **token_list)
 		t->anchor_pos++;
 		return;
 	}
-	
 	check_memory = alloc_new_token(&new_token, len);
 	if (check_memory == 0)
 		return ;
