@@ -27,6 +27,7 @@ t_t	*tokens(char *input)
 
 	while(t.input[t.pos] && !t.error)
 	{
+		
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);

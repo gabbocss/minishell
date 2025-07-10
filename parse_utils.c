@@ -10,18 +10,22 @@ t_command	*parse_commands(t_t *token)
 	current = NULL;
 	while(token && !token->error)
 	{
+		
 		if (!current)
 		{
 			current = malloc(sizeof(t_command));
 			ft_bzero(current, sizeof(t_command));
 		}
-		if (token->type == TOKEN_WORD || TOKEN_VAR)
+		if (token->type == TOKEN_WORD || token->type == TOKEN_VAR)
+		{
 			add_argument(current, token->value);
+		}
 		
 		else
 			parse_commands_2(&current, &head, token);
 		if (check_errorNclose(&head, current, token->error))
 			return (NULL);
+		ft_printf("token->value:: %s\n", token->value);
 		token = token->next;
 	}
 	if (current && (!token || !token->error))
@@ -71,6 +75,7 @@ void	add_argument(t_command *cmd, char *arg)
 
 void redir_in(t_command *cmd, t_t *token)	
 {
+	
 	if (token->next && token->next->type == TOKEN_WORD)
 	{
 		cmd->infile = ft_strdup(token->next->value);
