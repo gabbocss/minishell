@@ -88,14 +88,17 @@ void	open_quotes(t_t *t, t_t **token_list)
 
 void add_token(t_t *t, t_t **token_list)
 {
-	ft_printf("t->input[t->anchor_pos]:: '%c', t->anchor_pos:: %i\n", t->input[t->anchor_pos], t->anchor_pos);
+	ft_printf("t->anchor_po:: %i, t->pos:: %i\n", t->anchor_pos, t->pos);
 	if (t->pos > ft_strlen(t->input))
 		return ;
 	size_t	len;
+	ft_printf("aqui\n");
 	t_t *new_token;
 	int check_memory;
 	while (t->input[t->anchor_pos] == ' ' && t->anchor_pos < t->pos)
 		t->anchor_pos++;
+	if(t->anchor_pos == t->pos && (t->input[t->pos] == '<' || t->input[t->pos] == '>'))
+		return ;
 	len = t->pos - t->anchor_pos;
 	if (len == 0 || t->input[t->anchor_pos] == ' ')
 	{
@@ -106,7 +109,6 @@ void add_token(t_t *t, t_t **token_list)
 	if (check_memory == 0)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
-	ft_printf("new_token->value:: %s\n", new_token->value);
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
 	if (ft_strchr(("|<>"), new_token->value[0]))
 	{
@@ -119,6 +121,7 @@ void add_token(t_t *t, t_t **token_list)
 		new_token->type = TOKEN_WORD;
 		new_token->error = false;
 	}
+	ft_printf("final\n\n");
 	add_token_2(new_token, token_list);
 }
 
