@@ -25,7 +25,6 @@ t_command	*parse_commands(t_t *token)
 			parse_commands_2(&current, &head, token);
 		if (check_errorNclose(&head, current, token->error))
 			return (NULL);
-		ft_printf("token->value:: %s\n", token->value);
 		token = token->next;
 	}
 	if (current && (!token || !token->error))

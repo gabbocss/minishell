@@ -88,11 +88,9 @@ void	open_quotes(t_t *t, t_t **token_list)
 
 void add_token(t_t *t, t_t **token_list)
 {
-	ft_printf("t->anchor_po:: %i, t->pos:: %i\n", t->anchor_pos, t->pos);
 	if (t->pos > ft_strlen(t->input))
 		return ;
 	size_t	len;
-	ft_printf("aqui\n");
 	t_t *new_token;
 	int check_memory;
 	while (t->input[t->anchor_pos] == ' ' && t->anchor_pos < t->pos)
@@ -121,7 +119,6 @@ void add_token(t_t *t, t_t **token_list)
 		new_token->type = TOKEN_WORD;
 		new_token->error = false;
 	}
-	ft_printf("final\n\n");
 	add_token_2(new_token, token_list);
 }
 

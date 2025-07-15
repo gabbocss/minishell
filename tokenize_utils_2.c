@@ -105,11 +105,9 @@ void    is_var_2(t_t *t, t_t **token_list)
 	{
 		free(var);
 		dolar = t->pos;
-		ft_printf("t->input[t->pos]:: %c", t->input[t->pos]);
 		dolar++;
 		while (t->input[t->pos])
 			t->pos++;
-		ft_printf("t->input[t->pos]:: %c", t->input[t->pos]);
 		end_var = malloc((t->pos - dolar) +1);
 		ft_strlcpy(end_var, t->input + dolar, (t->pos - dolar) +1);
 		free(t->input);
@@ -119,6 +117,8 @@ void    is_var_2(t_t *t, t_t **token_list)
 	}
 	end_var = ft_strjoin(prefix, var_token);
 	add_custom_token(end_var, TOKEN_VAR, token_list);
+	ft_printf("%s: command not found\n", end_var);
+	t->error = true;
 	free(var);
 	free(end_var);
 	free(prefix);
