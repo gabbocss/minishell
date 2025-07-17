@@ -84,6 +84,8 @@ void    	check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word);
 void		add_custom_token(char *value, int type, t_t **token_list);
 void		is_var(t_t *t, t_t **token_list);
 void		is_var_2(t_t *t, t_t **token_list);
+void		free_quotes(char *str1, char *str2, char *str3);
+void		check_var(t_t *t);
 
 typedef struct s_env
 {
