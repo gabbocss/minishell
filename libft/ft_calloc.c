@@ -3,29 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asnaider <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/27 13:43:35 by inbauman          #+#    #+#             */
-/*   Updated: 2024/11/27 13:43:37 by inbauman         ###   ########.fr       */
+/*   Created: 2024/11/28 09:43:57 by asalucci          #+#    #+#             */
+/*   Updated: 2024/12/10 13:14:48 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include "libft.h"
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	void	*ptr;
+	unsigned char	*str;
+	size_t			prod;
 
-	if (nmemb == 0 || size == 0)
+	if (size == 0 || nmemb == 0)
 		return (malloc(0));
-	if (size > SIZE_MAX / nmemb)
+	if (nmemb > ((size_t) -1) / size)
 		return (NULL);
-	ptr = malloc(size * nmemb);
-	if (ptr == NULL)
+	prod = nmemb * size;
+	str = (unsigned char *)malloc (prod);
+	if (!str)
 		return (NULL);
-	ft_memset(ptr, 0, nmemb * size);
-	return (ptr);
+	while (prod > 0)
+	{
+		prod --;
+		str[prod] = 0;
+	}
+	return (str);
 }

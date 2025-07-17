@@ -1,0 +1,3 @@
+-arreglar "$HOME" que el var funcione dentro de las comillas dobles
+-gestionar el $?
+

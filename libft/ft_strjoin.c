@@ -3,37 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asalucci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/05 17:38:59 by inbauman          #+#    #+#             */
-/*   Updated: 2024/12/05 17:39:08 by inbauman         ###   ########.fr       */
+/*   Created: 2024/06/06 17:17:28 by asalucci          #+#    #+#             */
+/*   Updated: 2024/11/25 15:26:59 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "libft.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char	*dest;
+	char	*js;
 	size_t	i;
-	int		nbr;
+	size_t	j;
 
-	if (!s1 || !s2)
+	js = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!js)
 		return (NULL);
-	nbr = 0;
-	i = ft_strlen(s1) + ft_strlen(s2);
-	dest = malloc(i +1);
-	if (dest == NULL)
-		return (NULL);
-	while (*s1)
+	i = 0;
+	while (s1[i] != '\0')
 	{
-		dest[nbr++] = *s1++;
+		js[i] = s1[i];
+		i++;
 	}
-	while (*s2)
+	j = 0;
+	while (s2[j] != '\0')
 	{
-		dest[nbr++] = *s2++;
+		js[i + j] = s2[j];
+		j++;
 	}
-	dest[nbr] = '\0';
-	return (dest);
+	js[i + j] = '\0';
+	return (js);
 }

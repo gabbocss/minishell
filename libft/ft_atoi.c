@@ -3,59 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asalucci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/27 13:43:15 by inbauman          #+#    #+#             */
-/*   Updated: 2024/12/05 17:45:36 by inbauman         ###   ########.fr       */
+/*   Created: 2024/05/29 17:35:06 by asalucci          #+#    #+#             */
+/*   Updated: 2024/05/29 17:35:10 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include "libft.h"
 
-static int	signo(const char *nptr, int i)
+long long int	number(const char *nb_string)
 {
-	if (nptr[i] == '-')
-		return (-1);
-	else
-		return (1);
-}
+	int	p;
+	int	a;
+	int	len;
 
-static int	calculas_numero(const char *nptr, int i)
-{
-	int		numero;
-
-	numero = 0;
-	while (nptr[i] >= '0' && nptr[i] <= '9')
+	len = 0;
+	while (nb_string[len] <= '9' && nb_string[len] >= '0')
+		len++;
+	a = 0;
+	p = 1;
+	while (len > 0)
 	{
-		numero *= 10;
-		numero += nptr[i] - '0';
-		i++;
+		len--;
+		a = a + (nb_string[len] - '0') * p;
+		p = p * 10;
 	}
-	return (numero);
+	return (a);
 }
 
 int	ft_atoi(const char *nptr)
 {
-	int		numero;
-	int		negativo;
-	int		i;
+	int			i;
+	const char	*nb_string;
+	int			sign;
 
 	i = 0;
-	numero = 0;
-	negativo = 0;
-	if (nptr[i] == '\0')
-		return (0);
-	while (nptr[i] == ' ' || nptr[i] == '\t' || nptr[i] == '\n'
-		|| nptr[i] == '\r' || nptr[i] == '\v' || nptr[i] == '\f')
+	sign = 1;
+	while (nptr[i] == ' ' || (nptr[i] >= '\t' && nptr[i] <= '\r'))
 		i++;
-	if (!(nptr[i] == '-' || nptr[i] == '+' || (nptr[i] >= '0'
-				&& nptr[i] <= '9')))
-		return (0);
-	negativo = signo(nptr, i);
-	if (nptr[i] == '-' || nptr[i] == '+')
+	if (nptr[i] == '-')
+	{
+		sign = -1;
 		i++;
-	if (!(nptr[i] >= '0' && nptr[i] <= '9'))
-		return (0);
-	numero = calculas_numero(nptr, i);
-	return (numero * negativo);
+	}
+	else if (nptr[i] == '+')
+		i++;
+	if (nptr[i] <= '9' || nptr[i] >= '0')
+	{
+		nb_string = &nptr[i];
+		return (number(nb_string) * sign);
+	}
+	return (0);
 }

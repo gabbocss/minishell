@@ -3,34 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asalucci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/07 12:14:21 by inbauman          #+#    #+#             */
-/*   Updated: 2024/12/07 12:14:26 by inbauman         ###   ########.fr       */
+/*   Created: 2024/06/05 15:11:20 by asalucci          #+#    #+#             */
+/*   Updated: 2024/11/23 14:43:25 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* 
- * La función ft_strdup recibe una cadena de caracteres 's' y devuelve una 
- * nueva cadena que es una copia exacta de 's'. La memoria para la nueva
- * cadena se reserva dinámicamente con malloc. Si la reserva de memoria falla,
- * se retorna NULL. Se utiliza ft_strlcpy para copiar la cadena de manera 
- * segura, incluyendo el carácter de terminación '\0'.
- */
-
-#include <stddef.h>
 #include "libft.h"
-#include <stdlib.h>
 
 char	*ft_strdup(const char *s)
 {
 	size_t	i;
-	char	*dest;
+	char	*ds;
+	char	*cs;
 
-	i = ft_strlen(s);
-	dest = malloc(i +1);
-	if (dest == NULL)
+	cs = (char *)s;
+	i = 0;
+	while (cs[i] != '\0')
+		i++;
+	ds = (char *)malloc((sizeof (char)) * (i + 1));
+	if (!ds)
 		return (NULL);
-	ft_strlcpy(dest, s, i +1);
-	return (dest);
+	i = 0;
+	while (cs[i] != '\0')
+	{
+		ds[i] = cs[i];
+		i++;
+	}
+	ds[i] = '\0';
+	return ((char *)ds);
 }
+/*
+int main()
+{
+	char str[] = "abelsoft";
+	char *btr;
+
+	btr = ft_strdup(str);
+	free(btr);
+	return 0;
+}*/
