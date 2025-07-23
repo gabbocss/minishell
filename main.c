@@ -143,6 +143,8 @@ void	exec_builtin(t_command *cmds, t_env **env)
         builtin_pwd();
     else if (ft_strcmp(cmds->argv[0], "echo") == 0)// && !(cmds->argv[1] && ft_strcmp(cmds->argv[1], "$?") == 0))
         builtin_echo(cmds);
+	else if (ft_strcmp(cmds->argv[0], "exit") == 0)
+		builtin_exit(cmds->argv);
 	// else if (ft_strcmp(cmds->argv[0], "echo") == 0 && cmds->argv[1] && ft_strcmp(cmds->argv[1], "$?") == 0)
 	// {
 	// 	printf("%s\n", status_str);
@@ -151,26 +153,27 @@ void	exec_builtin(t_command *cmds, t_env **env)
 	// }
 }
 
-// char *expand_exit_status(char *input) // devi fare la fuznione generale per le $
-// {
-//     char *pos = ft_strstr(input, "$?");
-//     if (!pos)
-//         return ft_strdup(input);  // nessuna espansione necessaria
+char *expand_exit_status(char *input) // devi fare la fuznione generale per le $
+{
+    char *pos = strstr(input, "$?"); /////////////////////////////////////INVALID FUNC
 
-//     char *before = ft_substr(input, 0, pos - input);
-//     char *after = ft_strdup(pos + 2);
-//     char *status_str = ft_itoa(g_exit_status);
+    if (!pos)
+        return ft_strdup(input);  // nessuna espansione necessaria
 
-//     char *temp = ft_strjoin(before, status_str);
-//     char *expanded = ft_strjoin(temp, after);
+    char *before = ft_substr(input, 0, pos - input);
+    char *after = ft_strdup(pos + 2);
+    char *status_str = ft_itoa(g_exit_status);
 
-//     free(before);
-//     free(after);
-//     free(temp);
-//     free(status_str);
+    char *temp = ft_strjoin(before, status_str);
+    char *expanded = ft_strjoin(temp, after);
 
-//     return expanded;
-// }
+    free(before);
+    free(after);
+    free(temp);
+    free(status_str);
+
+    return expanded;
+}
 
 void	exec_single_non_builtin(t_command *cmds, t_env **env)
 {
@@ -206,6 +209,22 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 		printf("Command not found: %s\n", cmds->argv[0]);
 }
 
+void sigint_handler(int signum)
+{
+    (void)signum;
+    g_exit_status = 130;  // convenzione bash
+    write(1, "\n", 1);
+    rl_on_new_line();
+    rl_replace_line("", 0);
+    rl_redisplay();
+}
+
+void setup_shell_signals(void)
+{
+    signal(SIGINT, sigint_handler);  // Ctrl+C
+    signal(SIGQUIT, SIG_IGN);        // Ctrl+barra
+}
+
 int	main()
 {
 	char *input;
@@ -215,16 +234,32 @@ int	main()
 
     // printf("Shell Built-in Test - type 'exit' to quit\n");
 
+	setup_shell_signals();
 	while (1)
 	{
 		input = readline("minishell$ ");
-		if (!input || strncmp(input, "exit", 4) == 0)
+		if (!input)
 		{
 			printf("exit\n");
 			break;
 		}
 		if (*input)
 			add_history(input);
+		input = expand_exit_status(input); // trasformo gia qui ogni $?, cosa da cambiare 
+											/*		Test  15: ❌ echo "exit_code ->$? user ->$USER home -> $HOME" 
+											mini output = (exit_code ->0 user ->$USER home -> $HOME)
+											bash output = (exit_code ->0 user ->asalucci home -> /home/asalucci)
+											Test  16: ❌ echo 'exit_code ->$? user ->$USER home -> $HOME' 
+											mini output = (exit_code ->0 user ->$USER home -> $HOME)
+											bash output = (exit_code ->$? user ->$USER home -> $HOME)
+											Test  17: ✅ echo "$" 
+											Test  18: ✅ echo '$' 
+											Test  19: ❌ echo $ 
+											mini output = ()
+											bash output = ($)
+											Test  20: ✅ echo $? 
+											Test  21: ✅ echo $?HELLO */
+
 		token = tokens(input);
 		if (token)
 		{

@@ -13,7 +13,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 //#include <string.h>
-#include <sys/wait.h>
+
+#include <signal.h>
 
 extern int g_exit_status;
 
@@ -30,6 +31,7 @@ typedef enum token_type
 	TOKEN_DOUBLE_REDIR_IN,
 	TOKEN_DOUBLE_REDIR_OUT,
 	TOKEN_VAR,
+	TOKEN_QUOTE,
 } t_token_type;
 
 typedef struct s_token
@@ -45,6 +47,7 @@ typedef struct s_token
 	size_t			anchor_pos;
 	bool			error;
 	size_t			quote;
+	int				token_quote;
 } t_t;
 
 typedef struct s_command 
@@ -53,7 +56,8 @@ typedef struct s_command
     char				*infile;       
     char				*outfile;      
     int					redir_in;      
-    int					redir_out;     
+    int					redir_out;
+	int					token_quote;
     struct s_command	*next;
 } t_command;
 
@@ -70,7 +74,7 @@ t_t			*set_metachar_type(t_t **token_list);
 void		parse(t_t *token);
 t_command	*parse_commands(t_t *token);
 void		parse_commands_2(t_command **current, t_command **head, t_t *token);
-void		add_argument(t_command *cmd, char *arg);
+void		add_argument(t_command *cmd, char *arg, int token_quote);
 void 		redir_in(t_command *cmd, t_t *token);
 void		redir_out(t_command *cmd, t_t *token);
 void		add_pipe(t_command **head, t_command *new_node);
@@ -86,6 +90,7 @@ void		is_var(t_t *t, t_t **token_list);
 void		is_var_2(t_t *t, t_t **token_list);
 void		free_quotes(char *str1, char *str2, char *str3);
 void		check_var(t_t *t);
+void		new_input(t_t *t, char *exp_var, int count, int dollar);
 
 typedef struct s_env
 {
@@ -128,7 +133,7 @@ void apply_redir_out1(t_command *cmd);
 void apply_redir_out2(t_command *cmd);
 char *mini_getline(const char *prompt);
 void create_heredoc_open(const char *delimiter);
-void create_heredoc_effective(const char *delimiter, int fd, char *line);
+void create_heredoc_effective(const char *delimiter, int fd);
 void handle_child_process(t_command *cmd, int prev_fd, int pipe_fd[], t_env *env);
 void handle_parent_process(int *prev_fd, int pipe_fd[]);
 void setup_pipe(t_command *cmd, int pipe_fd[]);
@@ -141,5 +146,6 @@ bool is_builtin(t_command *cmd);
 //void	exec_single_simple_command(t_command *cmds, t_env **env);
 void	exec_builtin(t_command *cmds, t_env **env);
 void	exec_single_non_builtin(t_command *cmds, t_env **env);
+void	builtin_exit(char **args);
 
 # endif
