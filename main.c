@@ -153,26 +153,30 @@ void	exec_builtin(t_command *cmds, t_env **env)
 	// }
 }
 
-char *expand_exit_status(char *input) // devi fare la fuznione generale per le $
+bool   expand_exit_status(t_t *t) // devi fare la fuznione generale per le $
 {
-    char *pos = strstr(input, "$?"); /////////////////////////////////////INVALID FUNC
+    char *pos = NULL;
+    pos = ft_strnstr(t->input, "$?", ft_strlen(t->input)) - 1;
+    if (pos)
+    {
+        char *before = ft_substr(t->input, 0, pos - t->input);
+        ft_printf("before:: '%s'\n", before);
+        char *after = ft_strdup(pos +2);
+        ft_printf("after:: '%s'\n", after);
+        char *status_str = ft_itoa(g_exit_status);
+        ft_printf("status_str:: %s\n", status_str);
+        char *temp = ft_strjoin(before, status_str);
+        ft_printf("temp:: %s\n", temp);
+        t->input = ft_strjoin(temp, after);
 
-    if (!pos)
-        return ft_strdup(input);  // nessuna espansione necessaria
-
-    char *before = ft_substr(input, 0, pos - input);
-    char *after = ft_strdup(pos + 2);
-    char *status_str = ft_itoa(g_exit_status);
-
-    char *temp = ft_strjoin(before, status_str);
-    char *expanded = ft_strjoin(temp, after);
-
-    free(before);
-    free(after);
-    free(temp);
-    free(status_str);
-
-    return expanded;
+        free(before);
+        free(after);
+        free(temp);
+        free(status_str);
+        return (1);
+    }
+    else
+        return (0);
 }
 
 void	exec_single_non_builtin(t_command *cmds, t_env **env)
@@ -195,7 +199,7 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 		}
 		else if (pid > 0) // processo padre
 		{
-			waitpid(pid, NULL, 0); // aspettiamo il figlio
+			waitpid(pid, &status, 0); // aspettiamo il figlio
 			if (WIFEXITED(status))
 				g_exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
@@ -245,20 +249,20 @@ int	main()
 		}
 		if (*input)
 			add_history(input);
-		input = expand_exit_status(input); // trasformo gia qui ogni $?, cosa da cambiare 
-											/*		Test  15: ❌ echo "exit_code ->$? user ->$USER home -> $HOME" 
-											mini output = (exit_code ->0 user ->$USER home -> $HOME)
-											bash output = (exit_code ->0 user ->asalucci home -> /home/asalucci)
-											Test  16: ❌ echo 'exit_code ->$? user ->$USER home -> $HOME' 
-											mini output = (exit_code ->0 user ->$USER home -> $HOME)
-											bash output = (exit_code ->$? user ->$USER home -> $HOME)
-											Test  17: ✅ echo "$" 
-											Test  18: ✅ echo '$' 
-											Test  19: ❌ echo $ 
-											mini output = ()
-											bash output = ($)
-											Test  20: ✅ echo $? 
-											Test  21: ✅ echo $?HELLO */
+		// input = expand_exit_status(input); // trasformo gia qui ogni $?, cosa da cambiare 
+		// 									/*		Test  15: ❌ echo "exit_code ->$? user ->$USER home -> $HOME" 
+		// 									mini output = (exit_code ->0 user ->$USER home -> $HOME)
+		// 									bash output = (exit_code ->0 user ->asalucci home -> /home/asalucci)
+		// 									Test  16: ❌ echo 'exit_code ->$? user ->$USER home -> $HOME' 
+		// 									mini output = (exit_code ->0 user ->$USER home -> $HOME)
+		// 									bash output = (exit_code ->$? user ->$USER home -> $HOME)
+		// 									Test  17: ✅ echo "$" 
+		// 									Test  18: ✅ echo '$' 
+		// 									Test  19: ❌ echo $ 
+		// 									mini output = ()
+		// 									bash output = ($)
+		// 									Test  20: ✅ echo $? 
+		// 									Test  21: ✅ echo $?HELLO */
 
 		token = tokens(input);
 		if (token)

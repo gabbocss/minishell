@@ -22,22 +22,6 @@ void quotes(t_t *t)
 	}
 }
 
-// void	quotes(t_t *t)
-// {
-// 	if ((t->input[t->pos] == '\'' && !t->double_quote) && (t->start == t->input
-// 		|| t->input[t->pos -1] != '\\'))
-// 	{
-// 		t->single_quote = !t->single_quote;
-// 		t->pos++;
-// 	}
-// 	else if ((t->input[t->pos] == '\"' && !t->single_quote) && (t->start == t->input
-// 		|| t->input[t->pos -1] != '\\'))
-// 	{
-// 		t->double_quote = !t->double_quote;
-// 		t->pos++;
-// 	}
-// }
-
 void	metacharacters(t_t *t, t_t **token_list)
 {
 	
