@@ -40,13 +40,14 @@ char	**convert_env_list_to_array(t_env *env)
     int count = 0;
     t_env *tmp = env;
 	int i = 0;
-	char **envp = malloc((count + 1) * sizeof(char *));
+	char **envp;
 	
     while (tmp)
     {
         count++;
         tmp = tmp->next;
     }
+    envp = malloc((count + 1) * sizeof(char *));
     tmp = env;
     while (tmp)
     {
@@ -156,19 +157,15 @@ void	exec_builtin(t_command *cmds, t_env **env)
 bool   expand_exit_status(t_t *t) // devi fare la fuznione generale per le $
 {
     char *pos = NULL;
-    pos = ft_strnstr(t->input, "$?", ft_strlen(t->input)) - 1;
+    pos = ft_strnstr(t->input + t->anchor_pos, "$?", (t->pos - t->anchor_pos) +2);
     if (pos)
     {
         char *before = ft_substr(t->input, 0, pos - t->input);
-        ft_printf("before:: '%s'\n", before);
         char *after = ft_strdup(pos +2);
-        ft_printf("after:: '%s'\n", after);
         char *status_str = ft_itoa(g_exit_status);
-        ft_printf("status_str:: %s\n", status_str);
         char *temp = ft_strjoin(before, status_str);
-        ft_printf("temp:: %s\n", temp);
+        free(t->input);
         t->input = ft_strjoin(temp, after);
-
         free(before);
         free(after);
         free(temp);
@@ -193,7 +190,8 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 		{
 			execve(cmd_path, cmds->argv, envp);
 			perror("execve");
-			free_env_array(envp);
+            if (envp)
+			    free_env_array(envp);
 			free(cmd_path);
 			exit(EXIT_FAILURE);            // importante: usciamo dal figlio!
 		}
@@ -268,6 +266,7 @@ int	main()
 		if (token)
 		{
 			parse(token);
+            
 			cmds = parse_commands(token);
 			if (!cmds)
 				continue;
