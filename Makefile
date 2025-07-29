@@ -1,6 +1,6 @@
 # === Compilador y flags ===
 CC      = gcc 
-CFLAGS  = 
+CFLAGS  = -Wall -Wextra -Werror
 
 # === Rutas y nombres ===
 NAME        = minishell
@@ -8,9 +8,12 @@ LIBFT_DIR   = libft
 LIBFT_A     = $(LIBFT_DIR)/libft.a
 BUILD_DIR   = build
 
+# === Subcarpetas fuente ===
+SRC_SUBDIRS = . builtins env executor parser signals
+
 # === Fuentes y objetos ===
-SRC     = $(wildcard *.c)
-OBJ     = $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRC))
+SRC = $(foreach dir, $(SRC_SUBDIRS), $(wildcard $(dir)/*.c))
+OBJ = $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRC))
 
 # === Reglas ===
 all: $(NAME)
@@ -18,11 +21,13 @@ all: $(NAME)
 $(NAME): libft $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT_A) -lreadline -o $(NAME)
 
+# Regla para compilar archivos .c a .o respetando la estructura de subdirectorios
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I$(LIBFT_DIR) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -I$(LIBFT_DIR) -Iinclude -c $< -o $@
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 
 libft:
 	$(MAKE) -C $(LIBFT_DIR)

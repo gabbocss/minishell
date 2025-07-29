@@ -3,31 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asalucci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/21 16:04:01 by inbauman          #+#    #+#             */
-/*   Updated: 2024/11/21 16:04:04 by inbauman         ###   ########.fr       */
+/*   Created: 2024/11/18 14:23:03 by asalucci          #+#    #+#             */
+/*   Updated: 2024/11/20 18:05:55 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*Función ft_strchr: Esta función busca la primera ocurrencia del carácter c 
-en la cadena s. Si el carácter es encontrado, retorna un puntero a esa posición
-en la cadena. Si no se encuentra, retorna NULL.*/
-
-#include <stdlib.h>
+#include "libft.h"
 
 char	*ft_strchr(const char *s, int c)
 {
-	unsigned char	uc;
+	int	i;
 
-	uc = (unsigned char)c;
-	while (*s != '\0')
+	i = 0;
+	while (s[i] != '\0')
 	{
-		if (*s == (char) uc)
-			return ((char *)s);
-		s++;
+		if (s[i] == (unsigned char)c)
+			return (((char *)&(s[i])));
+		i++;
 	}
-	if (uc == '\0')
-		return ((char *)s);
-	return (NULL);
+	if (s[i] == (unsigned char)c)
+		return ((char *)(&(s[i])));
+	else
+		return (NULL);
 }

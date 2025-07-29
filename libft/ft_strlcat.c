@@ -3,28 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inbauman <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: asalucci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/21 11:01:10 by inbauman          #+#    #+#             */
-/*   Updated: 2024/11/21 11:01:18 by inbauman         ###   ########.fr       */
+/*   Created: 2024/11/18 15:31:41 by asalucci          #+#    #+#             */
+/*   Updated: 2024/11/20 17:23:44 by asalucci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
-#include <stddef.h>
 
 size_t	ft_strlcat(char *dst, const char *src, size_t size)
 {
-	size_t	d;
-	size_t	s;
-	size_t	espacio_libre;
+	size_t	i;
+	size_t	dstlen;
+	size_t	scrlen;
 
-	d = ft_strlen(dst);
-	s = ft_strlen(src);
-	espacio_libre = size - d - 1;
-	if (size <= d)
-		return (size + s);
-	if (espacio_libre > s)
-		espacio_libre = s;
-	ft_strlcpy(dst + d, src, espacio_libre +1);
-	return (d + s);
+	dstlen = ft_strlen(dst);
+	scrlen = ft_strlen(src);
+	if (size)
+	{
+		if (ft_strlen(dst) >= size)
+			return (size + scrlen);
+		i = 0;
+		while (src[i] != '\0' && i < size - dstlen - 1)
+		{
+			dst[dstlen + i] = src[i];
+			i++;
+		}
+		dst[dstlen + i] = '\0';
+		return (dstlen + scrlen);
+	}
+	else
+		return (scrlen);
 }
