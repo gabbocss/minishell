@@ -171,10 +171,8 @@ void add_token(t_t *t, t_t **token_list)
 	check_memory = alloc_new_token(&new_token, len);
 	if (check_memory == 0)
 		return ;
-	//ft_printf("t->pos 3:: %i\n", t->pos);
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
-	//ft_printf("new_token->value:: %s\n", new_token->value);
 	if (ft_strchr(("|<>"), new_token->value[0]))
 	{
 		new_token->type = METACHAR;
