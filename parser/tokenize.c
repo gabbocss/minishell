@@ -29,7 +29,7 @@ t_t	*tokens(char *input)
 
 	while(t.input[t.pos] && !t.error)
 	{
-		
+		//ft_printf("t.input[t.pos]:: %c\n", t.input[t.pos]);
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);

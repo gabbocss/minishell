@@ -144,22 +144,22 @@ void open_quotes(t_t *t, t_t **token_list)
 
 void add_token(t_t *t, t_t **token_list)
 {
-	//ft_printf("t->anchor_pos:: %i, t->pos 1:: %i\n", t->anchor_pos, t->pos);
 	if (t->pos > ft_strlen(t->input))
 		return ;
 	size_t	len;
 	t_t *new_token;
 	int check_memory;
+	int	redir_control;
+
+	redir_control = 0;
 	while (t->input[t->anchor_pos] == ' ' && t->anchor_pos < t->pos)
 		t->anchor_pos++;
-	//ft_printf("t->anchor_pos:: %i, t->pos 2:: %i\n", t->anchor_pos, t->pos);
 	if(t->anchor_pos == t->pos && (t->input[t->pos] == '<' || t->input[t->pos] == '>'))
 	{
-		//ft_printf("entro if \n");
 		if (t->input[t->pos +1] == '<' || t->input[t->pos +1] == '>')
 			return ;
 		t->pos++;
-		//ft_printf("entro if \n");
+		redir_control = 1;
 	}
 		
 	len = t->pos - t->anchor_pos;
@@ -183,10 +183,10 @@ void add_token(t_t *t, t_t **token_list)
 		new_token->type = TOKEN_WORD;
 		new_token->error = false;
 	} 
-	add_token_2(new_token, token_list);
+	add_token_2(new_token, token_list, redir_control, t);
 }
 
-void add_token_2(t_t *new_token, t_t **token_list)
+void add_token_2(t_t *new_token, t_t **token_list, int redir_control, t_t *t)
 {
 	new_token->next = NULL;
 	if (*token_list == NULL) {
@@ -196,5 +196,9 @@ void add_token_2(t_t *new_token, t_t **token_list)
 		while (last->next != NULL)
 			last = last->next;
 		last->next = new_token;
+	}
+	if (redir_control == 1)
+	{
+		t->pos--;
 	}
 }
