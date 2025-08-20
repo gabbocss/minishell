@@ -134,6 +134,8 @@ void open_quotes(t_t *t, t_t **token_list)
 				}
 				t->anchor_pos = t->pos + 1;  // Salta la virgoletta finale
 				t->pos++;
+				if (t->input[t->pos] == '\"')
+					t->continue_var = !t->continue_var;
 				return;
 			}
 			t->pos++;
@@ -198,7 +200,5 @@ void add_token_2(t_t *new_token, t_t **token_list, int redir_control, t_t *t)
 		last->next = new_token;
 	}
 	if (redir_control == 1)
-	{
 		t->pos--;
-	}
 }

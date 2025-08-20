@@ -48,6 +48,7 @@ typedef struct s_token
 	bool			error;
 	size_t			quote;
 	int				token_quote;
+	bool			continue_var;
 } t_t;
 
 typedef struct s_command 
