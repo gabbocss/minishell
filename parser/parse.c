@@ -1,18 +1,23 @@
 #include "../minishell.h"
 #include "../libft/libft.h"
 
-void	parse(t_t *token)
+void parse(t_t *token)
 {
-	t_command *cmd_list;
-   
-	cmd_list = NULL;
-	token->error = false;
+    t_command *cmd_list = NULL;
+
+    token->error = false;
+    cmd_list = parse_commands(token);
+    if (!cmd_list)
+    {
+        free_tokens(token);
+        return;
+    }
+	//free_tokens(token);
+    print_commands(cmd_list);
+    
      
-	cmd_list = parse_commands(token);
-	if (!cmd_list)
-		return ;
-	//print_commands(cmd_list);
 }
+
 
 void free_command_list(t_command *cmd)
 {

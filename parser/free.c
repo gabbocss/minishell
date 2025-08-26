@@ -6,3 +6,16 @@ void    free_quotes(char *str1, char *str2, char *str3)
     free(str2);
     free(str3);
 }
+
+void free_tokens(t_t *token)
+{
+    t_t *tmp;
+
+    while (token)
+    {
+        tmp = token->next;
+        free(token->value);
+        free(token);
+        token = tmp;
+    }
+}

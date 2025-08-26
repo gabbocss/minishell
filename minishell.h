@@ -15,6 +15,7 @@
 //#include <string.h>
 
 #include <signal.h>
+#include <errno.h>  // Per errno e ECHILD
 
 extern int g_exit_status;
 
@@ -51,6 +52,21 @@ typedef struct s_token
 	bool			continue_var;
 } t_t;
 
+typedef enum e_redir_type
+{
+    REDIR_IN,      // <
+    REDIR_OUT,     // >
+    REDIR_APPEND,  // >>
+    REDIR_HEREDOC  // <<
+}   t_redir_type;
+
+typedef struct s_redir
+{
+    t_redir_type 	type;
+    char        	*filename;
+    struct s_redir	*next;
+}   t_redir;
+
 typedef struct s_command 
 {
     char				**argv;        
@@ -60,7 +76,21 @@ typedef struct s_command
     int					redir_out;
 	int					token_quote;
     struct s_command	*next;
+	t_redir				*redir_in_list;
 } t_command;
+
+typedef struct global 
+{
+	int	heredoc_interrupted;
+} t_global;
+
+typedef struct s_key_value {
+    char    *key;
+    char    *value;
+    char    *new_value_part;
+    char    *old_value;
+} t_key_value;
+
 
 t_t	*tokens(char *input);
 void		quotes(t_t *t);
@@ -93,6 +123,7 @@ void		free_quotes(char *str1, char *str2, char *str3);
 void		check_var(t_t *t);
 void		new_input(t_t *t, char *exp_var, int count, int dollar);
 bool		expand_exit_status(t_t *t);
+void 		free_tokens(t_t *token);
 
 typedef struct s_env
 {
@@ -134,14 +165,14 @@ void apply_redir_in2(void);
 void apply_redir_out1(t_command *cmd);
 void apply_redir_out2(t_command *cmd);
 char *mini_getline(const char *prompt);
-void create_heredoc_open(const char *delimiter);
+void create_heredoc_open(const char *delimiter, t_global *g);
 void create_heredoc_effective(const char *delimiter);
 void handle_child_process(t_command *cmd, int prev_fd, int pipe_fd[], t_env *env);
 void handle_parent_process(int *prev_fd, int pipe_fd[]);
 void setup_pipe(t_command *cmd, int pipe_fd[]);
 void fork_process(pid_t *pid);
 void wait_for_children(void);
-void exec_command_list(t_command *cmd_list, t_env *env);
+void exec_command_list(t_command *cmd_list, t_env *env, t_global *g);
 char *get_command_path(char *cmd, t_env *env);
 char	**convert_env_list_to_array(t_env *env);
 bool is_builtin(t_command *cmd);
@@ -150,5 +181,10 @@ void	exec_builtin(t_command *cmds, t_env **env);
 void	exec_single_non_builtin(t_command *cmds, t_env **env);
 void	builtin_exit(char **args);
 
+void	sigint_handler(int signum);
+void	init_key_value(t_key_value *data, char *arg, char *equal_pos, int is_append);
+void	handle_append_case(t_key_value *data, t_env **env);
+void	update_or_add_env(t_key_value *data, t_env **env);
+void	cleanup_key_value(t_key_value *data);
 
 # endif

@@ -78,23 +78,34 @@ void	add_argument(t_command *cmd, char *arg, int token_quote)
 		cmd->token_quote = 1;
 }
 
-void redir_in(t_command *cmd, t_t *token)	
+void redir_in(t_command *cmd, t_t *token)   
 {
-	
-	if (token->next && token->next->type == TOKEN_WORD)
-	{
-		cmd->infile = ft_strdup(token->next->value);
-		if (token->type == TOKEN_REDIR_IN)
-			cmd->redir_in = 1;
-		else
-			cmd->redir_in = 2;
-	}
-	else
-	{
-		ft_printf("minishell: syntax error near unexpected token\n"); 
-		token->error = true;
-	}
+    if (token->next && token->next->type == TOKEN_WORD)
+    {
+        t_redir *new = malloc(sizeof(t_redir));
+        new->filename = ft_strdup(token->next->value);
+        new->next = NULL;
+        if (!cmd->redir_in_list)
+            cmd->redir_in_list = new;
+        else
+        {
+            t_redir *tmp = cmd->redir_in_list;
+            while (tmp->next)
+                tmp = tmp->next;
+            tmp->next = new;
+        }
+        if (token->type == TOKEN_REDIR_IN)
+            cmd->redir_in = 1;
+        else
+            cmd->redir_in = 2;
+    }
+    else
+    {
+        ft_printf("minishell: syntax error near unexpected token\n"); 
+        token->error = true;
+    }
 }
+
 
 void redir_out(t_command *cmd, t_t *token)
 {
