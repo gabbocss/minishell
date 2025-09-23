@@ -61,7 +61,8 @@ void	metacharacters(t_t *t, t_t **token_list)
 			{
 				t->pos += 2;
 				add_token(t, token_list);
-				t->anchor_pos = t->pos +1;
+				t->anchor_pos = t->pos;
+
 			}
 		else
 			triple_meta(t, token_list);
