@@ -65,12 +65,14 @@ void	metacharacters(t_t *t, t_t **token_list)
 			}
 		else
 			triple_meta(t, token_list);
-		t->pos++;
+		if (t->input[t->pos] != '"')
+			t->pos++;
 	}
 }
 
 void open_quotes(t_t *t, t_t **token_list)
 {
+	
 	if (t->single_quote || t->double_quote)
 	{
 		if (t->double_quote)
@@ -189,7 +191,7 @@ void prepare_quotes(t_t *t, t_t **token_list)
 void	last_str(t_t *t, char *str, t_t **token_list)
 {
 	char	*end_str;
-
+	
 	end_str = NULL;
 	end_str = ft_strjoin(t->tmp_token, str);
 	
