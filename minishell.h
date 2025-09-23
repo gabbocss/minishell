@@ -51,6 +51,7 @@ typedef struct s_token
 	int				token_quote;
 	bool			continue_var;
 	bool            to_remove; 
+	char			*tmp_token;
 } t_t;
 
 typedef enum e_redir_type
@@ -126,6 +127,8 @@ void		new_input(t_t *t, char *exp_var, int count, int dollar);
 bool		expand_exit_status(t_t *t);
 void		prepare_quotes(t_t *t, t_t **token_list);
 void		prepare_str(t_t *t, t_t **token_list);
+void		last_str(t_t *t, char *str, t_t **token_list);
+void		temp_token(t_t *t, char *str);
 
 typedef struct s_env
 {

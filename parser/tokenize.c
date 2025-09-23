@@ -16,6 +16,7 @@ void	initStruct(t_t *t)
 	t->quote = 0;
 	t->token_quote = 0;
 	t->continue_var = false;
+	t->tmp_token = NULL;
 }
 
 t_t	*tokens(char *input)
@@ -30,9 +31,11 @@ t_t	*tokens(char *input)
 
 	while(t.input[t.pos] && !t.error)
 	{
+		//ft_printf("t->pos un tokens:: %i\nt->input[pos]:: --->%c<---\n", t.pos, t.input[t.pos]);
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);
+		
 		if (t.continue_var)
 		{
 			t.continue_var = !t.continue_var;
@@ -42,10 +45,13 @@ t_t	*tokens(char *input)
 		{
 			if (t.input[t.pos] == '$')
 				is_var(&t, &token_list);
+			//ft_printf("t->pos depues if:: %i\n", t.pos);
 			metacharacters(&t, &token_list);
+			//ft_printf("t->pos depues metacharacters:: %i\n", t.pos);
 		}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
 			add_token(&t, &token_list);
+		//ft_printf("final\nt->pos:: %i\n\n", t.pos);
 	}
 	if (t.single_quote || t.double_quote || t.error)
 	{
