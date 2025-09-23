@@ -129,6 +129,7 @@ void		prepare_quotes(t_t *t, t_t **token_list);
 void		prepare_str(t_t *t, t_t **token_list);
 void		last_str(t_t *t, char *str, t_t **token_list);
 void		temp_token(t_t *t, char *str);
+bool		check_redirs(char pos);
 
 typedef struct s_env
 {

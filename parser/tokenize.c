@@ -30,12 +30,10 @@ t_t	*tokens(char *input)
 	t.start = input;
 
 	while(t.input[t.pos] && !t.error)
-	{
-		//ft_printf("t->pos un tokens:: %i\nt->input[pos]:: --->%c<---\n", t.pos, t.input[t.pos]);
+	{	
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list);
-		
 		if (t.continue_var)
 		{
 			t.continue_var = !t.continue_var;
@@ -45,9 +43,9 @@ t_t	*tokens(char *input)
 		{
 			if (t.input[t.pos] == '$')
 				is_var(&t, &token_list);
-			//ft_printf("t->pos depues if:: %i\n", t.pos);
+			//ft_printf("t->pos antes metacharacters:: %c\n\n", t.input[t.pos]);
 			metacharacters(&t, &token_list);
-			//ft_printf("t->pos depues metacharacters:: %i\n", t.pos);
+			//ft_printf("t->pos depues metacharacters:: %c\n\n", t.input[t.pos]);
 		}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
 			add_token(&t, &token_list);

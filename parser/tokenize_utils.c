@@ -43,7 +43,7 @@ void	metacharacters(t_t *t, t_t **token_list)
 				
 		else if (t->input[t->pos] == '>' && t->input[t->pos +1] != '>')
 		{
-			
+			//ft_printf("t->anchor pos:: %c, t->pos:: %c\n\n", t->input[t->anchor_pos], t->input[t->pos]);
 			if (t->pos == t->anchor_pos)
 				t->pos++;
 			add_token(t, token_list);
@@ -66,8 +66,13 @@ void	metacharacters(t_t *t, t_t **token_list)
 			}
 		else
 			triple_meta(t, token_list);
+		if ((t->input[t->pos] == '<' || t->input[t->pos] == '>') && t->input[t->pos -1] != ' ')
+			return ;
 		if (t->input[t->pos] != '"')
 			t->pos++;
+		
+
+
 	}
 }
 
@@ -268,7 +273,6 @@ void add_token(t_t *t, t_t **token_list)
 	if (check_memory == 0)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
-	//ft_printf("new_token->value:: %s\nt->pos en add token:: %i\n\n", new_token->value, t->pos);
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
 	if (ft_strchr(("|<>"), new_token->value[0]))
 	{
