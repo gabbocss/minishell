@@ -64,21 +64,42 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 }
 void	is_var(t_t *t, t_t **token_list)
 {
+	
 	char	*var_temp;
 	char	*var;
 	char	*var_word;
+	char	*temp;
+
+	temp = NULL;
+	var_word = NULL;
+	var = NULL;
+	var_temp = NULL;
 	
 	if (expand_exit_status(t))
 		return;
+	
 	if (t->input[t->anchor_pos] == ' ')
 		t->anchor_pos++;
+	
     if (t->input[t->anchor_pos] == '$')
 	{
+		
 		if (!t->input[t->anchor_pos +1] || t->input[t->anchor_pos +1] == ' ')
 		{
-			add_custom_token("$", TOKEN_WORD, token_list);
+			
+			if (t->tmp_token)
+			{
+
+				temp = ft_strdup("$\n");
+	
+				last_str(t, temp, token_list);
+				
+			}
+			else
+				add_custom_token("$", TOKEN_WORD, token_list);
 			t->anchor_pos++;
 			t->pos = t->anchor_pos;
+			
 			return;
 		}
 		if (t->pos == t->anchor_pos)
@@ -95,8 +116,13 @@ void	is_var(t_t *t, t_t **token_list)
 			return;
 		}		
 		var_word = ft_strdup(var);
-		add_custom_token(var_word, TOKEN_VAR, token_list);
-		free(var_word);
+		if (t->tmp_token)
+			last_str(t, var_word, token_list);
+		else
+		{
+			add_custom_token(var_word, TOKEN_VAR, token_list);
+			free(var_word);
+		}
 		free(var_temp);
 		t->anchor_pos = t->pos;
 	}
@@ -133,6 +159,7 @@ void    is_var_2(t_t *t, t_t **token_list)
 		free(t->input);
 		t->input = ft_strjoin(prefix, end_var);
 		t->pos = t->anchor_pos;
+		free(end_var);
 		return;
 	}
 	end_var = ft_strjoin(prefix, var_token);
@@ -145,4 +172,5 @@ void    is_var_2(t_t *t, t_t **token_list)
 	free(end_var);
 	free(prefix);
 	t->anchor_pos = t->pos;
+	
 }

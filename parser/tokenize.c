@@ -43,6 +43,7 @@ t_t	*tokens(char *input)
 		{
 			if (t.input[t.pos] == '$')
 				is_var(&t, &token_list);
+			
 			//ft_printf("t->pos antes metacharacters:: %c\n\n", t.input[t.pos]);
 			metacharacters(&t, &token_list);
 			//ft_printf("t->pos depues metacharacters:: %c\n\n", t.input[t.pos]);
