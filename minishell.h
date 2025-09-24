@@ -32,7 +32,6 @@ typedef enum token_type
 	TOKEN_DOUBLE_REDIR_IN,
 	TOKEN_DOUBLE_REDIR_OUT,
 	TOKEN_VAR,
-	TOKEN_QUOTE,
 } t_token_type;
 
 typedef struct s_token
@@ -48,7 +47,6 @@ typedef struct s_token
 	size_t			anchor_pos;
 	bool			error;
 	size_t			quote;
-	int				token_quote;
 	bool			continue_var;
 	bool            to_remove; 
 	char			*tmp_token;
@@ -78,7 +76,6 @@ typedef struct s_command
 	t_redir				*redirs;
     // int					redir_in;
     // int					redir_out;
-	int					token_quote;
     struct s_command	*next;
 } t_command;
 
@@ -107,7 +104,7 @@ t_t			*set_metachar_type(t_t **token_list);
 void		parse(t_t *token);
 t_command	*parse_commands(t_t *token);
 void		parse_commands_2(t_command **current, t_command **head, t_t *token);
-void		add_argument(t_command *cmd, char *arg, int token_quote, bool from_redir);
+void		add_argument(t_command *cmd, char *arg, bool from_redir);
 void 		redir_in(t_command *cmd, t_t *token);
 void		redir_out(t_command *cmd, t_t *token);
 void		add_pipe(t_command **head, t_command *new_node);

@@ -39,18 +39,9 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 	if (!new_token)
 		return ;
 	new_token->value = ft_strdup(value);
-	if (type == TOKEN_QUOTE)
-	{
-		new_token->type = TOKEN_WORD;
-		new_token->token_quote = 1;
-		new_token->error = false;
-	}
-	else
-	{
-		new_token->type = type;
-		new_token->token_quote = 0;
-		new_token->error = false;
-	}
+	new_token->type = type;
+	new_token->error = false;
+
 	new_token->next = NULL;
 	if (!*token_list)
 		*token_list = new_token;

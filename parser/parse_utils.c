@@ -28,10 +28,10 @@ t_command	*parse_commands(t_t *token)
 		}
 		if ((token->type == TOKEN_WORD || token->type == TOKEN_VAR) &&
 			(!prev_token || !is_redir_token(prev_token->type)))
-			add_argument(current, token->value, token->token_quote, false);
+			add_argument(current, token->value, false);
 		else if ((token->type == TOKEN_WORD || token->type == TOKEN_VAR) &&
 				prev_token && is_redir_token(prev_token->type))
-			add_argument(current, token->value, token->token_quote, true);
+			add_argument(current, token->value, true);
 		else
 			parse_commands_2(&current, &head, token);
 		if (check_errorNclose(&head, current, token->error))
@@ -76,7 +76,7 @@ void	add_argument_alloc(t_command *cmd, char ***new_argv, bool **new_arg_is_redi
 	}
 }
 
-void	add_argument(t_command *cmd, char *arg, int token_quote, bool from_redir)
+void	add_argument(t_command *cmd, char *arg, bool from_redir)
 {
 	int	count;
 	char **new_argv;
@@ -97,8 +97,6 @@ void	add_argument(t_command *cmd, char *arg, int token_quote, bool from_redir)
     free(cmd->arg_is_redir);
     cmd->argv = new_argv;
     cmd->arg_is_redir = new_arg_is_redir;
-	if (token_quote == 1)
-		cmd->token_quote = 1;
 }
 
 
