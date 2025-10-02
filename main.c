@@ -7,6 +7,22 @@
 
 int	g_exit_status = 0;
 
+t_command *init_command(void)
+{
+    t_command *cmd;
+    
+    cmd = malloc(sizeof(t_command));
+    if (!cmd)
+        return (NULL);
+    cmd->argv = NULL;
+    cmd->arg_is_redir = NULL;
+    cmd->infile = NULL;
+    cmd->outfile = NULL;
+    cmd->redirs = NULL;
+    cmd->next = NULL;
+    return (cmd);
+}
+
 t_env	*init_env(void)
 {
 	t_env	*env;
@@ -112,6 +128,15 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	return (joined);
 }
 
+bool	dot_slash(char *cmd)
+{
+	if (ft_strcmp(cmd, ".") == 0)
+		return (true);
+	if (ft_strcmp(cmd, "./") == 0)
+		return (true);
+	return (false);
+}
+
 char	*get_command_path(char *cmd, t_env *env)
 {
 	char	*path_var;
@@ -119,6 +144,8 @@ char	*get_command_path(char *cmd, t_env *env)
 	char	*candidate;
 	int		i;
 
+	if (dot_slash(cmd))
+		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
 	path_var = get_env_value(env, "PATH");
@@ -238,6 +265,16 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 	{
 		exec_and_wait(cmds, cmd_path, envp);
 	}
+	else if (ft_strcmp(cmds->argv[0], ".") == 0)
+	{
+		ft_putstr_fd(".: filename argument required\n", 2);
+		g_exit_status = 2;
+	}
+	else if (ft_strcmp(cmds->argv[0], "./") == 0)
+	{
+		ft_putstr_fd("./: Is a directory\n", 2);
+		g_exit_status = 126;
+	}
 	else
 	{
 		ft_putstr_fd(cmds->argv[0], 2);
@@ -295,16 +332,20 @@ void	process_input_history(char *input)
 		add_history(input);
 }
 
-t_command	*parse_input_to_commands(char *input)
+t_command   *parse_input_to_commands(char *input)
 {
-	t_t	*token;
+    t_t *token;
+    t_command *cmd;
 
-	token = tokens(input);
-	if (!token)
-		return (NULL);
-	parse(token);
-	return (parse_commands(token));
+    token = tokens(input);
+    if (!token)
+        return (NULL);
+    parse(token);
+    cmd = parse_commands(token);
+    free_token_list(token);  // ← Aquí liberas los tokens
+    return (cmd);
 }
+
 
 void	execute_single_command(t_command *cmds, t_env **env)
 {
@@ -331,29 +372,123 @@ void	cleanup_resources(t_env *env, t_global *global)
 	free(global);
 }
 
+bool	only_spaces_after_pipe(char *pp)
+{
+	size_t i;
+
+	i = 1;
+	while (pp[i])
+	{
+		if (!(pp[i] == ' ' || pp[i] == '\t'))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+bool quotes_closed(char *input)
+{
+    bool in_single;
+    bool in_double;
+	char *p;
+
+	in_single = false;
+    in_double = false;
+	p = input;
+    while (*p)
+	{
+        if (*p == '\'' && !in_double)
+            in_single = !in_single;
+        else if (*p == '"' && !in_single)
+            in_double = !in_double;
+        else if (*p == '\\')
+            if (*(p + 1))
+				p++;
+		p++;
+    }
+    return (!in_single && !in_double);
+}
+
+int	input_is_open(char *input)
+{
+	char *pp;
+
+	pp = ft_strchr(input, '|');
+	if (!quotes_closed(input))
+		return (1);
+	if (pp && only_spaces_after_pipe(pp))
+		return (2);
+	return (0);
+}
+
 int main_loop(t_env **env, t_global *global)
 {
-    char        *input;
+    char        *input = NULL;
+    char        *temp = NULL;
     t_command   *cmds;
+	int			open_type;
 
     while (1)
     {
-        input = readline("minishell$ ");
-        if (handle_input_interruption(global, input))
-            continue;
-        if (handle_eof(input))
+		input = readline("minishell$ ");
+		// if (handle_input_interruption(global, input))
+		// 	continue;
+		if (input == NULL)
+        {
+            printf("exit\n");
             break;
+        }
+		open_type = input_is_open(input);
+		while (open_type)
+		{
+			temp = readline("> ");
+			if (temp == NULL)
+			{
+				free(input);
+				input = NULL;
+				break;
+			}
+			// if (*temp == '\0')
+			// {
+			// 	free(input);
+			// 	free(temp);
+			// 	input = NULL;
+			// 	g_exit_status = 130;
+			// 	break;
+			// } NON PUO ESSERE LA SOLUZIONE PERCHE IO CON INPUT VUOTO VOGLIO CHE VADA ANCORA A CAPO FINCHE NON SCIROV QUALCOSA
+			if (open_type == 1)
+            	input = ft_strjoin_free(input, temp);
+			if (open_type == 2)
+				input = ft_strjoin_3(input, " ", temp);//////giusto per, non e il problema////////////////
+			free(temp);
+			open_type = input_is_open(input);
+		}
+		if (input == NULL)
+            break;
+        if (handle_input_interruption(global, input))
+        {
+            free(input);
+            continue;
+        }
+        if (handle_eof(input))
+        {
+            free(input);
+            break;
+        }
         process_input_history(input);
         cmds = parse_input_to_commands(input);
         process_commands(cmds, env, global);  // Passa l'indirizzo di env
+
         free(input);
+		
     }
+	clear_history();
     return 0;
 }
 
 int main(int argc, char **argv, char **envp)
 {
-	argc = 0;
+	argc = 0;      // abc '
 	argc++;
 	argv = NULL;
 	free(argv);
@@ -374,4 +509,3 @@ int main(int argc, char **argv, char **envp)
     cleanup_resources(env, global);
     return 0;
 }
-

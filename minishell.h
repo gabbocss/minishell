@@ -36,19 +36,20 @@ typedef enum token_type
 
 typedef struct s_token
 {
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
-	bool			single_quote;
-	bool			double_quote;
-	char			*input;
-	char			*start;
-	size_t			pos;
-	size_t			anchor_pos;
-	bool			error;
-	size_t			quote;
-	bool			continue_var;
-	bool            to_remove; 
+    char            *value;
+    t_token_type    type;
+    struct s_token  *next;
+    struct s_token  *prev;
+	bool            single_quote;
+    bool            double_quote;
+    char            *input;
+    char            *start;
+    size_t          pos;
+    size_t          anchor_pos;
+    bool            error;
+    size_t          quote;
+    bool            continue_var;
+    bool            to_remove; 
 	char			*tmp_token;
 } t_t;
 
@@ -127,6 +128,7 @@ void		prepare_str(t_t *t, t_t **token_list);
 void		last_str(t_t *t, char *str, t_t **token_list);
 void		temp_token(t_t *t, char *str);
 bool		check_redirs(char pos);
+void		free_command_args(t_command *cmd);
 
 typedef struct s_env
 {
@@ -193,5 +195,9 @@ void redir_append(t_command *cmd, t_t *token);
 void	redir_heredoc(t_command *cmd, t_t *token);
 
 void init_shlvl(t_env **env);
+
+t_command *init_command(void);
+
+void apply_redir_heredoc(void);
 
 # endif

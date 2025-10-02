@@ -1,0 +1,99 @@
+PROBLEMI IRRISOLTI:
+
+
+
+
+	Importanti:
+
+
+minishell$ export ciao="echo"
+minishell$ $ciao ciao2
+
+
+
+
+	Get crazy:
+
+
+asalucci@c2r6p4:~/0_0_minishell$ << ciao cat > prova
+> $HOME
+> "$HOME"
+> '$HOME'
+> "'$HOM'E"
+> ciao
+asalucci@c2r6p4:~/0_0_minishell$ << "ciao" cat > prova
+> $HOME
+> "$HOME"
+> '$HOME'
+> ciao
+
+
+
+
+	Opzionali e sottigliezze:
+
+
+Ctrl C in multilinea >		(ho scoperto che il multilinea era opzionale, ma ormai l'ho implementato al 90%...)
+
+|| da' errore al primo || attaccato a ||, non riconosce ||
+
+FUNZIONA ---> minishell$ echo "ffffff'sssss"ssss"rrrr'nnnnnn" <---  FUNZIONA
+
+.
+./   Ok, stderr, exit code giusto, tutto corretto eccetto che non viene stampatp "minishell:" come "bash:" nel caso generale dell'errore, senza comandi
+
+non gestire parentesi vuol dire con echo stamparle come fossero caratteri ?
+
+
+
+
+
+
+
+
+
+
+
+
+( PROBLEMI ORIGINALI per suggerire test ai testatori : )
+
+
+
+
+
+< main.c cat
+
+(
+cat < main.c |	(| aperto)
+' aperto
+" aperto
+)
+$?
+
+||
+$?
+
+minishell$ echo "ffffff'sssss"ssss"rrrr'nnnnnn"
+
+cat << eee
+
+
+---
+
+
+asalucci@c2r6p4:~/0_0_minishell$ << ciao cat > prova
+> $HOME
+> "$HOME"
+> '$HOME'
+> "'$HOM'E"
+> ciao
+asalucci@c2r6p4:~/0_0_minishell$ << "ciao" cat > prova
+> $HOME
+> "$HOME"
+> '$HOME'
+> ciao
+
+
+
+minishell$ export ciao="echo"
+minishell$ $ciao ciao2

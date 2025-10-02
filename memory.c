@@ -15,3 +15,81 @@ int alloc_new_token(t_t **new_token, int len)
 	}
 	return (1);
 }
+
+void free_command_list(t_command *cmd)
+{
+    t_command *tmp;
+    int i;
+
+    while (cmd)
+    {
+		i = 0;
+        tmp = cmd->next;
+        if (cmd->argv)
+        {
+            while (cmd->argv[i])
+                free(cmd->argv[i++]);
+            free(cmd->argv);
+        }
+        free(cmd->infile);
+        free(cmd->outfile);
+        free(cmd);
+        cmd = tmp;
+		
+    }
+}
+
+void free_token_list(t_t *token)
+{
+    t_t *tmp;
+
+    while (token)
+    {
+        tmp = token->next;
+        free(token->value);
+        free(token);
+        token = tmp;
+    }
+}
+
+void free_command(t_command *cmd)
+{
+    int i = 0;
+    t_redir *r;
+    t_redir *tmp;
+
+    if (!cmd)
+        return;
+    if (cmd->argv)
+    {
+        while (cmd->argv[i])
+            free(cmd->argv[i++]);
+        free(cmd->argv);
+    }
+    free(cmd->arg_is_redir);  // ← Añadido
+    r = cmd->redirs;
+    while (r)
+    {
+        tmp = r->next;
+        free(r->filename);
+        free(r);
+        r = tmp;
+    }
+    free(cmd->infile);
+    free(cmd->outfile);
+    free(cmd);
+}
+
+void free_command_args(t_command *cmd)
+{
+    if (!cmd)
+        return;
+    if (cmd->argv)
+    {
+        for (int i = 0; cmd->argv[i]; i++)
+            free(cmd->argv[i]);
+        free(cmd->argv);
+    }
+    if (cmd->arg_is_redir)
+        free(cmd->arg_is_redir);
+}

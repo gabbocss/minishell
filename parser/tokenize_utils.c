@@ -294,7 +294,6 @@ void add_token(t_t *t, t_t **token_list)
 		t->anchor_pos = t->pos;
 		return;
 	}
-
 	t->anchor_pos = t->pos;	// (il +1 è per non ripettere l'ultimo carattere) in qualche momento funcionava adesso non piu, tolto.
 	if (ft_strchr(("|<>"), new_token->value[0]))
 	{

@@ -21,6 +21,7 @@ void check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word)
     {
         printf("minishell: syntax error near unexpected token '|'\n");
         t->error = true;
+		g_exit_status = 2;
     }
     else
     {
@@ -41,7 +42,6 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 	new_token->value = ft_strdup(value);
 	new_token->type = type;
 	new_token->error = false;
-
 	new_token->next = NULL;
 	if (!*token_list)
 		*token_list = new_token;
@@ -53,44 +53,49 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 		tmp->next = new_token;
 	}
 }
+
 void	is_var(t_t *t, t_t **token_list)
 {
-	
+    // Gestione speciale per $?
+	if (t->input[t->pos] == '$' && t->input[t->pos + 1] == '?')
+	{
+		char *exit_status = ft_itoa(g_exit_status);
+		t->pos += 2;
+		if (ft_isalnum(t->input[t->pos]) || t->input[t->pos] == '_')
+		{
+			size_t start = t->pos;
+			while (t->input[t->pos] && (ft_isalnum(t->input[t->pos]) || t->input[t->pos] == '_'))
+				t->pos++;
+			char *suffix = ft_substr(t->input, start, t->pos - start);
+			char *joined = ft_strjoin(exit_status, suffix);
+			add_custom_token(joined, TOKEN_WORD, token_list);
+			free(suffix);
+			free(joined);
+		}
+		else
+		{
+			add_custom_token(exit_status, TOKEN_WORD, token_list);
+		}
+		free(exit_status);
+		t->anchor_pos = t->pos;
+		return;
+	}
+
 	char	*var_temp;
 	char	*var;
 	char	*var_word;
-	char	*temp;
-
-	temp = NULL;
-	var_word = NULL;
-	var = NULL;
-	var_temp = NULL;
 	
 	if (expand_exit_status(t))
 		return;
-	
 	if (t->input[t->anchor_pos] == ' ')
 		t->anchor_pos++;
-	
     if (t->input[t->anchor_pos] == '$')
 	{
-		
 		if (!t->input[t->anchor_pos +1] || t->input[t->anchor_pos +1] == ' ')
 		{
-			
-			if (t->tmp_token)
-			{
-
-				temp = ft_strdup("$\n");
-	
-				last_str(t, temp, token_list);
-				
-			}
-			else
-				add_custom_token("$", TOKEN_WORD, token_list);
+			add_custom_token("$", TOKEN_WORD, token_list);
 			t->anchor_pos++;
 			t->pos = t->anchor_pos;
-			
 			return;
 		}
 		if (t->pos == t->anchor_pos)
@@ -107,13 +112,8 @@ void	is_var(t_t *t, t_t **token_list)
 			return;
 		}		
 		var_word = ft_strdup(var);
-		if (t->tmp_token)
-			last_str(t, var_word, token_list);
-		else
-		{
-			add_custom_token(var_word, TOKEN_VAR, token_list);
-			free(var_word);
-		}
+		add_custom_token(var_word, TOKEN_VAR, token_list);
+		free(var_word);
 		free(var_temp);
 		t->anchor_pos = t->pos;
 	}
