@@ -59,14 +59,23 @@ void free_command(t_command *cmd)
     t_redir *tmp;
 
     if (!cmd)
-        return;
+	{
+		return;
+	}
+
+	
+
+	if (cmd->arg_is_redir){
+		free(cmd->arg_is_redir);
+		 cmd->arg_is_redir = NULL;}
+
     if (cmd->argv)
     {
         while (cmd->argv[i])
             free(cmd->argv[i++]);
         free(cmd->argv);
     }
-    free(cmd->arg_is_redir);  // ← Añadido
+      // ← Añadido
     r = cmd->redirs;
     while (r)
     {

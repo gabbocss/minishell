@@ -340,9 +340,9 @@ t_command   *parse_input_to_commands(char *input)
     token = tokens(input);
     if (!token)
         return (NULL);
-    parse(token);
-    cmd = parse_commands(token);
-    free_token_list(token);  // ← Aquí liberas los tokens
+    cmd = parse(token);
+    //cmd = parse_commands(token);
+   	free_token_list(token);  // ← Aquí liberas los tokens
     return (cmd);
 }
 

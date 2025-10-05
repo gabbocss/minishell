@@ -102,7 +102,7 @@ void		add_token_2(t_t *new_token, t_t **token_list, int redir_control,  t_t *t);
 int			alloc_new_token(t_t **new_token, int len);
 void		triple_meta(t_t *t, t_t **token_list);
 t_t			*set_metachar_type(t_t **token_list);
-void		parse(t_t *token);
+t_command	*parse(t_t *token);
 t_command	*parse_commands(t_t *token);
 void		parse_commands_2(t_command **current, t_command **head, t_t *token);
 void		add_argument(t_command *cmd, char *arg, bool from_redir);
