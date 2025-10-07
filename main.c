@@ -332,12 +332,12 @@ void	process_input_history(char *input)
 		add_history(input);
 }
 
-t_command   *parse_input_to_commands(char *input)
+t_command   *parse_input_to_commands(char *input, bool *free_input)
 {
     t_t *token;
     t_command *cmd;
 
-    token = tokens(input);
+    token = tokens(input, free_input);
     if (!token)
         return (NULL);
     cmd = parse(token);
@@ -427,17 +427,18 @@ int main_loop(t_env **env, t_global *global)
     char        *temp = NULL;
     t_command   *cmds;
 	int			open_type;
+	bool	free_input;
 
+	free_input = 0;
     while (1)
     {
 		input = readline("minishell$ ");
-		// if (handle_input_interruption(global, input))
-		// 	continue;
 		if (input == NULL)
         {
             printf("exit\n");
             break;
         }
+
 		open_type = input_is_open(input);
 		while (open_type)
 		{
@@ -448,43 +449,48 @@ int main_loop(t_env **env, t_global *global)
 				input = NULL;
 				break;
 			}
-			// if (*temp == '\0')
-			// {
-			// 	free(input);
-			// 	free(temp);
-			// 	input = NULL;
-			// 	g_exit_status = 130;
-			// 	break;
-			// } NON PUO ESSERE LA SOLUZIONE PERCHE IO CON INPUT VUOTO VOGLIO CHE VADA ANCORA A CAPO FINCHE NON SCIROV QUALCOSA
 			if (open_type == 1)
             	input = ft_strjoin_free(input, temp);
 			if (open_type == 2)
-				input = ft_strjoin_3(input, " ", temp);//////giusto per, non e il problema////////////////
+				input = ft_strjoin_3(input, " ", temp);
 			free(temp);
 			open_type = input_is_open(input);
 		}
 		if (input == NULL)
             break;
+
         if (handle_input_interruption(global, input))
         {
             free(input);
+          //  rl_free_line_state();
             continue;
         }
+
         if (handle_eof(input))
         {
             free(input);
+          //  rl_free_line_state();
             break;
         }
-        process_input_history(input);
-        cmds = parse_input_to_commands(input);
-        process_commands(cmds, env, global);  // Passa l'indirizzo di env
 
-        free(input);
-		
+        process_input_history(input);
+        cmds = parse_input_to_commands(input, &free_input);
+        process_commands(cmds, env, global);
+
+       
     }
-	clear_history();
+	if (free_input)
+			{
+				free(input);
+			}
+
+			rl_free_line_state();
+			input = NULL;
+ 
+    rl_clear_history(); 
     return 0;
 }
+
 
 int main(int argc, char **argv, char **envp)
 {

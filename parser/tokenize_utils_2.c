@@ -25,7 +25,8 @@ void check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word)
     }
     else
     {
-        t->pos++;
+		if(t->input[t->pos])
+    		t->pos++;
         add_token(t, token_list);
     }
 }

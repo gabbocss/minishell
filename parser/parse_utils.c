@@ -14,7 +14,6 @@ t_command *parse_commands(t_t *token)
     t_command *head = NULL;
     t_command *current = NULL;
     t_t *prev = NULL;  // Change from struct s_t * to t_t *
-
     while (token && !token->error)
     {
 		

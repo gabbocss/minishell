@@ -51,6 +51,7 @@ typedef struct s_token
     bool            continue_var;
     bool            to_remove; 
 	char			*tmp_token;
+	bool			free_input;
 } t_t;
 
 typedef enum e_redir_type
@@ -92,10 +93,10 @@ typedef struct s_key_value {
     char    *old_value;
 } t_key_value;
 
-t_t	*tokens(char *input);
+t_t	*tokens	(char *input, bool *free_input);
 void		quotes(t_t *t);
 void		metacharacters(t_t *t, t_t **token_list);
-void		open_quotes(t_t *t, t_t **token_list);
+void		open_quotes(t_t *t, t_t **token_list, bool *free_input);
 void		add_token(t_t *t, t_t **token_list);
 void		initStruct(t_t *t);
 void		add_token_2(t_t *new_token, t_t **token_list, int redir_control,  t_t *t);
@@ -123,7 +124,7 @@ void		free_quotes(char *str1, char *str2, char *str3);
 void		check_var(t_t *t);
 void		new_input(t_t *t, char *exp_var, int count, int dollar);
 bool		expand_exit_status(t_t *t);
-void		prepare_quotes(t_t *t, t_t **token_list);
+void		prepare_quotes(t_t *t, t_t **token_list, bool *free_input);
 void		prepare_str(t_t *t, t_t **token_list);
 void		last_str(t_t *t, char *str, t_t **token_list);
 void		temp_token(t_t *t, char *str);
