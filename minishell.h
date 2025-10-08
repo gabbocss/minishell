@@ -130,6 +130,7 @@ void		last_str(t_t *t, char *str, t_t **token_list);
 void		temp_token(t_t *t, char *str);
 bool		check_redirs(char pos);
 void		free_command_args(t_command *cmd);
+void		free_paths(char **paths);
 
 typedef struct s_env
 {

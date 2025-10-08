@@ -215,10 +215,10 @@ void	last_str(t_t *t, char *str, t_t **token_list)
 	
 	end_str = NULL;
 
-
 	end_str = ft_strjoin(t->tmp_token, str);
 	add_custom_token(end_str, TOKEN_WORD, token_list);
 	free(t->tmp_token);
+	t->tmp_token = NULL;
 	free(end_str);
 	free(str);
 }

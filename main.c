@@ -160,9 +160,16 @@ char	*get_command_path(char *cmd, t_env *env)
 		candidate = ft_strjoin(paths[i], "/");
 		candidate = ft_strjoin_free(candidate, cmd);
 		if (access(candidate, X_OK) == 0)
+		{
+			free_paths(paths);
 			return (candidate);
+		}
+		free(candidate);	
 		i++;
 	}
+	
+	candidate = NULL;
+	free_paths(paths);
 	return (NULL);
 }
 
@@ -281,6 +288,7 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 		ft_putstr_fd(": command not found\n", 2);
 		g_exit_status = 127;
 	}
+	free_env_array(envp);
 }
 
 void	sigint_handler(int signum)

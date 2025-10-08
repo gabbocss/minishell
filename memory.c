@@ -89,16 +89,15 @@ void free_command(t_command *cmd)
     free(cmd);
 }
 
-void free_command_args(t_command *cmd)
+void free_paths(char **paths)
 {
-    if (!cmd)
-        return;
-    if (cmd->argv)
-    {
-        for (int i = 0; cmd->argv[i]; i++)
-            free(cmd->argv[i]);
-        free(cmd->argv);
-    }
-    if (cmd->arg_is_redir)
-        free(cmd->arg_is_redir);
+	int i;
+
+	i = 0;
+	while(paths[i])
+	{
+		free(paths[i]);
+		i++;
+	}
+	free(paths);
 }
