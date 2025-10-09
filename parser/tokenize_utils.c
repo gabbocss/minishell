@@ -298,6 +298,7 @@ void add_token(t_t *t, t_t **token_list)
 	if (check_memory == 0)
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
+	ft_printf("new_token->value:: %s\n", new_token->value);
 	if (t->tmp_token)
 	{
 		last_str(t, ft_strdup(new_token->value), token_list);

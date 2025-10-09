@@ -58,6 +58,7 @@ void    add_custom_token(char *value, int type, t_t **token_list)
 void is_var(t_t *t, t_t **token_list, t_env *env)
 {
     // Gestione speciale per $?
+	
 	if (t->input[t->pos] == '$' && t->input[t->pos + 1] == '?')
 	{
 		char *exit_status = ft_itoa(g_exit_status);
