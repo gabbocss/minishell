@@ -329,6 +329,7 @@ int	handle_eof(char *input)
 	if (!input)
 	{
 		printf("exit\n");
+		free(input);//////////////////////////////
 		return (1);
 	}
 	return (0);
@@ -340,12 +341,12 @@ void	process_input_history(char *input)
 		add_history(input);
 }
 
-t_command   *parse_input_to_commands(char *input, bool *free_input)
+t_command *parse_input_to_commands(char *input, bool *free_input, t_env *env)
 {
     t_t *token;
     t_command *cmd;
 
-    token = tokens(input, free_input);
+    token = tokens(input, free_input, env);  // PASS env
     if (!token)
         return (NULL);
     cmd = parse(token);
@@ -353,7 +354,6 @@ t_command   *parse_input_to_commands(char *input, bool *free_input)
    	free_token_list(token);  // ← Aquí liberas los tokens
     return (cmd);
 }
-
 
 void	execute_single_command(t_command *cmds, t_env **env)
 {
@@ -371,7 +371,7 @@ void process_commands(t_command *cmds, t_env **env, t_global *global)
         execute_single_command(cmds, env);  // Passa env come doppio puntatore
     else
         exec_command_list(cmds, *env, global);  // Dereferenzia env
-    free_command(cmds);
+    free_command_l(cmds);
 }
 
 void	cleanup_resources(t_env *env, t_global *global)
@@ -432,7 +432,6 @@ int	input_is_open(char *input)
 int main_loop(t_env **env, t_global *global)
 {
     char        *input = NULL;
-    char        *temp = NULL;
     t_command   *cmds;
 	int			open_type;
 	bool	free_input;
@@ -446,57 +445,65 @@ int main_loop(t_env **env, t_global *global)
             printf("exit\n");
             break;
         }
-
 		open_type = input_is_open(input);
-		while (open_type)
+
+
+		if (open_type == 1)
 		{
-			temp = readline("> ");
-			if (temp == NULL)
-			{
-				free(input);
-				input = NULL;
-				break;
-			}
-			if (open_type == 1)
-            	input = ft_strjoin_free(input, temp);
-			if (open_type == 2)
-				input = ft_strjoin_3(input, " ", temp);
-			free(temp);
-			open_type = input_is_open(input);
-		}
-		if (input == NULL)
-            break;
-
-        if (handle_input_interruption(global, input))
-        {
-            free(input);
-          //  rl_free_line_state();
-            continue;
-        }
-
-        if (handle_eof(input))
-        {
-            free(input);
-          //  rl_free_line_state();
-            break;
-        }
-
-        process_input_history(input);
-        cmds = parse_input_to_commands(input, &free_input);
-        process_commands(cmds, env, global);
-
-       
-    }
-	if (free_input)
-			{
-				free(input);
-			}
-
-			rl_free_line_state();
+			ft_putstr_fd("minishell: Syntax error: unclosed quotes\n", 2);
+			g_exit_status = 2;
+			free(input);
 			input = NULL;
- 
-    rl_clear_history(); 
-    return 0;
+			continue;
+		}
+		// if (open_type == 2)
+		// {
+		// 	ft_putstr_fd("minishell: Error: Pipe not specified\n", 2);
+		// 	continue;
+		// }
+
+		// if (open_type)
+        //     global->in_multiline = true;
+		// while (open_type)
+		// {
+		// 	temp = readline("> ");
+		// 	if (temp == NULL)
+		// 	{
+		// 		free(input);
+		// 		input = NULL;
+		// 		break;
+		// 	}
+		// 	if (open_type == 1)
+        //     	input = ft_strjoin_free(input, temp);
+		// 	if (open_type == 2)
+		// 		input = ft_strjoin_3(input, " ", temp);
+		// 	free(temp);
+		// 	open_type = input_is_open(input);
+		// }
+		// global->in_multiline = false;
+
+
+		if (handle_input_interruption(global, input))
+		{
+			input = NULL;
+			continue;
+		}
+		if (handle_eof(input))
+		{
+			input = NULL;
+			break;
+		}
+		process_input_history(input);
+		cmds = parse_input_to_commands(input, &free_input, *env);
+		process_commands(cmds, env, global);
+		if (free_input)
+		{
+			input = NULL;
+			free_input = false;
+		}
+	}
+	rl_clear_history();
+	return 0;
 }
 
 

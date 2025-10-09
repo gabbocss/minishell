@@ -35,7 +35,6 @@ void free_command_list(t_command *cmd)
         free(cmd->outfile);
         free(cmd);
         cmd = tmp;
-		
     }
 }
 
@@ -59,16 +58,12 @@ void free_command(t_command *cmd)
     t_redir *tmp;
 
     if (!cmd)
-	{
 		return;
-	}
-
-	
-
-	if (cmd->arg_is_redir){
+	if (cmd->arg_is_redir)
+	{
 		free(cmd->arg_is_redir);
-		 cmd->arg_is_redir = NULL;}
-
+		 cmd->arg_is_redir = NULL;
+	}
     if (cmd->argv)
     {
         while (cmd->argv[i])
@@ -100,4 +95,15 @@ void free_paths(char **paths)
 		i++;
 	}
 	free(paths);
+}
+
+void free_command_l(t_command *cmd_list)
+{
+    t_command *tmp;
+    while (cmd_list)
+    {
+        tmp = cmd_list->next;
+        free_command(cmd_list);
+        cmd_list = tmp;
+    }
 }

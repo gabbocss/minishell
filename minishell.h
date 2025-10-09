@@ -17,6 +17,8 @@
 #include <signal.h>
 #include <errno.h>  // Per errno e ECHILD
 
+#include <sys/stat.h>
+
 extern int g_exit_status;
 
 typedef enum token_type
@@ -83,7 +85,7 @@ typedef struct s_command
 
 typedef struct global 
 {
-	int	heredoc_interrupted;
+	int		heredoc_interrupted;
 } t_global;
 
 typedef struct s_key_value {
@@ -93,7 +95,15 @@ typedef struct s_key_value {
     char    *old_value;
 } t_key_value;
 
-t_t	*tokens	(char *input, bool *free_input);
+typedef struct s_env
+{
+    char *key;
+    char *value;
+	int exportable;
+    struct s_env *next;
+} t_env;
+
+t_t			*tokens(char *input, bool *free_input, t_env *env);
 void		quotes(t_t *t);
 void		metacharacters(t_t *t, t_t **token_list);
 void		open_quotes(t_t *t, t_t **token_list, bool *free_input);
@@ -118,7 +128,7 @@ bool		check_errorNclose(t_command **head, t_command *current, bool error);
 void		check_pipes(t_t *t, t_t **token_list);
 void    	check_pipes_2(t_t *t, t_t **token_list, size_t start, char *word);
 void		add_custom_token(char *value, int type, t_t **token_list);
-void		is_var(t_t *t, t_t **token_list);
+void		is_var(t_t *t, t_t **token_list, t_env *env);
 void		is_var_2(t_t *t, t_t **token_list);
 void		free_quotes(char *str1, char *str2, char *str3);
 void		check_var(t_t *t);
@@ -131,14 +141,7 @@ void		temp_token(t_t *t, char *str);
 bool		check_redirs(char pos);
 void		free_command_args(t_command *cmd);
 void		free_paths(char **paths);
-
-typedef struct s_env
-{
-    char *key;
-    char *value;
-	int exportable;
-    struct s_env *next;
-} t_env;
+void        free_command_l(t_command *cmd_list);
 
 int	builtin_cd(char **args, t_env **env);
 void	builtin_env(t_env *env);

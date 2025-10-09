@@ -20,7 +20,7 @@ void	initStruct(t_t *t)
 	
 }
 
-t_t	*tokens(char *input, bool *free_input)
+t_t		*tokens(char *input, bool *free_input, t_env *env)
 {
 	t_t t;
 	t_t *token_list;
@@ -43,7 +43,7 @@ t_t	*tokens(char *input, bool *free_input)
 		if(t.input[t.pos])
 		{
 			if (t.input[t.pos] == '$')
-				is_var(&t, &token_list);
+				is_var(&t, &token_list, env);
 			metacharacters(&t, &token_list);
 		}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
@@ -61,6 +61,7 @@ t_t	*tokens(char *input, bool *free_input)
 	free(t.input);
 	 return (set_metachar_type(&token_list));
 }
+
 t_t	*set_metachar_type(t_t **token_list)
 {
 	t_t *temp;
