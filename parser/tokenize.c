@@ -58,13 +58,8 @@ t_t		*tokens(char *input, bool *free_input, t_env *env)
 		}
 		return (0);
 	}
-	if (t.tmp_token)
-	{
-		add_custom_token(t.tmp_token, TOKEN_WORD, token_list);
-		free(t.tmp_token);
-	}
 	free(t.input);
-	 return (set_metachar_type(&token_list));
+	return (set_metachar_type(&token_list));
 }
 
 t_t	*set_metachar_type(t_t **token_list)

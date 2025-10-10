@@ -82,22 +82,37 @@ void is_var(t_t *t, t_t **token_list, t_env *env)
 		t->anchor_pos = t->pos;
 		return;
 	}
-
+	
 	char	*var_temp;
 	char	*var;
 	char	*var_word;
-	
+	char	*tmp_str;
 	if (expand_exit_status(t))
 		return;
 	if (t->input[t->anchor_pos] == ' ')
 		t->anchor_pos++;
     if (t->input[t->anchor_pos] == '$')
 	{
+		
 		if (!t->input[t->anchor_pos +1] || t->input[t->anchor_pos +1] == ' ')
 		{
-			add_custom_token("$", TOKEN_WORD, token_list);
-			t->anchor_pos++;
-			t->pos = t->anchor_pos;
+			if (t->tmp_token)
+			{
+				tmp_str = malloc(2); // 1 char + '\0'
+				if (!tmp_str) 
+					return;     
+				tmp_str[0] = '$';
+				tmp_str[1] = '\0';
+				last_str(t, tmp_str, token_list);
+				t->anchor_pos++;
+				t->pos = t->anchor_pos;
+			}
+			else
+			{
+				add_custom_token("$", TOKEN_WORD, token_list);
+				t->anchor_pos++;
+				t->pos = t->anchor_pos;
+			}
 			return;
 		}
 		if (t->pos == t->anchor_pos)
