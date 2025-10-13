@@ -456,33 +456,6 @@ int main_loop(t_env **env, t_global *global)
 			input = NULL;
 			continue;
 		}
-		// if (open_type == 2)
-		// {
-		// 	ft_putstr_fd("minishell: Error: Pipe not specified\n", 2);
-		// 	continue;
-		// }
-
-		// if (open_type)
-        //     global->in_multiline = true;
-		// while (open_type)
-		// {
-		// 	temp = readline("> ");
-		// 	if (temp == NULL)
-		// 	{
-		// 		free(input);
-		// 		input = NULL;
-		// 		break;
-		// 	}
-		// 	if (open_type == 1)
-        //     	input = ft_strjoin_free(input, temp);
-		// 	if (open_type == 2)
-		// 		input = ft_strjoin_3(input, " ", temp);
-		// 	free(temp);
-		// 	open_type = input_is_open(input);
-		// }
-		// global->in_multiline = false;
-
-
 		if (handle_input_interruption(global, input))
 		{
 			input = NULL;
