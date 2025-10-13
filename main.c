@@ -482,24 +482,56 @@ int main_loop(t_env **env, t_global *global)
 
 int main(int argc, char **argv, char **envp)
 {
-	argc = 0;      // abc '
-	argc++;
-	argv = NULL;
-	free(argv);
-    //t_env       *env = init_env();
-	t_env *env = copy_env(envp);
-    t_global    *global = malloc(sizeof(t_global));
+    t_env *env = copy_env(envp);
+    t_global *global = malloc(sizeof(t_global));
 
-	init_shlvl(&env);
-	
     if (!global)
     {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
+
+    init_shlvl(&env);
     global->heredoc_interrupted = 0;
     setup_shell_signals();
-    main_loop(&env, global);  // Passa l'indirizzo di env
+
+    // Modo no interactivo con -c
+    if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
+    {
+		char *input = argv[2];
+		char *input_copy = strdup(input); // Duplica para evitar modificar argv[2]
+		if (!input_copy)
+		{
+			perror("strdup");
+			cleanup_resources(env, global);
+			return 1;
+		}
+
+		int open_type = input_is_open(input_copy);
+		if (open_type == 1)
+		{
+			ft_putstr_fd("minishell: Syntax error: unclosed quotes\n", 2);
+			free(input_copy);
+			cleanup_resources(env, global);
+			return 2;
+		}
+
+		process_input_history(input_copy);
+		bool free_input = false;
+		t_command *cmds = parse_input_to_commands(input_copy, &free_input, env);
+		process_commands(cmds, &env, global);
+
+		if (free_input)
+			free(input_copy);
+
+		cleanup_resources(env, global);
+		return g_exit_status;
+
+    }
+
+    // Modo interactivo normal
+    main_loop(&env, global);
     cleanup_resources(env, global);
     return 0;
 }
+
