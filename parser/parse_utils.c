@@ -16,7 +16,6 @@ t_command *parse_commands(t_t *token)
     t_t *prev = NULL;  // Change from struct s_t * to t_t *
     while (token && !token->error)
     {
-		
         token->prev = prev; // This should now work
         prev = token;
 
@@ -43,24 +42,9 @@ t_command *parse_commands(t_t *token)
 
         token = token->next;
     }
-
-	// if (current && (!current->argv || !current->argv[0]))
-    // {
-    //     // Se abbiamo un comando senza argv[0] ma con redirezioni,
-    //     // creiamo un argv fittizio per evitare crash
-    //     if (current->redirs)
-    //         add_argument(current, "", false);  // Aggiungi stringa vuota come comando
-    //     else
-    //     {
-    //         // Comando completamente vuoto, possiamo ignorare
-    //         free_command(current);
-    //         current = NULL;
-    //     }
-    // }
-
     if (current)
-        add_pipe(&head, current);
-
+        {add_pipe(&head, current);}
+	
     return head;
 }
 

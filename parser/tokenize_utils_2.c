@@ -73,7 +73,18 @@ void is_var(t_t *t, t_t **token_list, t_env *env)
             free(joined);
         }
         else
-            add_custom_token(exit_status, TOKEN_WORD, token_list);
+		{
+			if (t->input[t->pos] == '\'' || t->input[t->pos] == '"')
+			{
+				temp_token(t, exit_status);
+				t->anchor_pos = t->pos;
+      			return;
+			}
+				
+			else
+				add_custom_token(exit_status, TOKEN_WORD, token_list);
+
+		} 
         free(exit_status);
         t->anchor_pos = t->pos;
         return;

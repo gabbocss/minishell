@@ -42,8 +42,11 @@ t_t		*tokens(char *input, bool *free_input, t_env *env)
 		}
 		if(t.input[t.pos])
 		{
-			if (t.input[t.pos] == '$')
+			if (t.input[t.pos] == '$'){
 				is_var(&t, &token_list, env);
+				if(t.input[t.pos] == '\'')
+					continue;
+				}
 			metacharacters(&t, &token_list);
 		}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
