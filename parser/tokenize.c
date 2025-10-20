@@ -32,9 +32,11 @@ t_t		*tokens(char *input, bool *free_input, t_env *env)
 
 	while(t.input[t.pos] && !t.error)
 	{	
+		//ft_printf("t->pos:: %i\n", t.pos);
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list, free_input);
+		
 		if (t.continue_var)
 		{
 			t.continue_var = !t.continue_var;
@@ -47,6 +49,8 @@ t_t		*tokens(char *input, bool *free_input, t_env *env)
 				if(t.input[t.pos] == '\'')
 					continue;
 				}
+			//if (t.input[t.pos] == ' ')
+			//	add_token(&t, &token_list);
 			metacharacters(&t, &token_list);
 		}
 		if (!t.input[t.pos] && t.pos != t.anchor_pos)
