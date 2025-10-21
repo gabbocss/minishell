@@ -216,7 +216,7 @@ void is_var_2(t_t *t, t_t **token_list)
         return;
     }
     end_var = ft_strjoin(prefix, var_token);
-	//ft_printf("end_var:: %s\n", end_var);
+	
     add_custom_token(end_var, TOKEN_VAR, token_list);
 
     free(var);

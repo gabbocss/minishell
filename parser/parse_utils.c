@@ -154,7 +154,7 @@ void redir_in(t_command *cmd, t_t *token)
     }
     else
     {
-        ft_printf("minishell: syntax error near unexpected token\n");
+        printf("minishell: syntax error near unexpected token\n");
         token->error = true;
 		g_exit_status = 2;
     }
@@ -172,7 +172,7 @@ void redir_out(t_command *cmd, t_t *token)
     }
     else
     {
-        ft_printf("minishell: syntax error near unexpected token\n");
+        printf("minishell: syntax error near unexpected token\n");
         token->error = true;
 		g_exit_status = 2;
     }
@@ -190,7 +190,7 @@ void redir_append(t_command *cmd, t_t *token)
     }
     else
     {
-        ft_printf("minishell: syntax error near unexpected token\n");
+        printf("minishell: syntax error near unexpected token\n");
         token->error = true;
 		g_exit_status = 2;
     }
@@ -208,7 +208,7 @@ void redir_heredoc(t_command *cmd, t_t *token)
     }
     else
     {
-        ft_printf("minishell: syntax error near unexpected token\n");
+        printf("minishell: syntax error near unexpected token\n");
         token->error = true;
 		g_exit_status = 2;
     }

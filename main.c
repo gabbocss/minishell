@@ -463,52 +463,77 @@ int	input_is_open(char *input)
 int main_loop(t_env **env, t_global *global)
 {
     char        *input = NULL;
+    char        **segments;
     t_command   *cmds;
-	int			open_type;
-	bool	free_input;
+    int         open_type;
+    int         i;
+    bool        free_input;
 
-	free_input = 0;
+    free_input = 0;
     while (1)
     {
-		input = readline("minishell$ ");
-		if (input == NULL)
+        input = readline("minishell$ ");
+        if (input == NULL)
         {
             printf("exit\n");
             break;
         }
-		open_type = input_is_open(input);
 
+        open_type = input_is_open(input);
+        if (open_type == 1)
+        {
+            ft_putstr_fd("minishell: Syntax error: unclosed quotes\n", 2);
+            g_exit_status = 2;
+            free(input);
+            continue;
+        }
 
-		if (open_type == 1)
-		{
-			ft_putstr_fd("minishell: Syntax error: unclosed quotes\n", 2);
-			g_exit_status = 2;
-			free(input);
-			input = NULL;
-			continue;
-		}
-		if (handle_input_interruption(global, input))
-		{
-			input = NULL;
-			continue;
-		}
-		if (handle_eof(input))
-		{
-			input = NULL;
-			break;
-		}
-		process_input_history(input);
-		cmds = parse_input_to_commands(input, &free_input, *env);
-		process_commands(cmds, env, global);
-		if (free_input)
-		{
-			input = NULL;
-			free_input = false;
-		}
-	}
-	rl_clear_history();
-	return 0;
+        if (handle_input_interruption(global, input))
+        {
+            free(input);
+            continue;
+        }
+
+        if (handle_eof(input))
+        {
+            free(input);
+            break;
+        }
+
+        process_input_history(input);
+
+        // --- NUEVO: Soporte para ';' ---
+        segments = ft_split(input, ';');
+        if (!segments)
+        {
+            free(input);
+            continue;
+        }
+        i = 0;
+        while (segments[i])
+        {
+            if (segments[i][0] != '\0') // evitar ;; vacíos
+            {
+                cmds = parse_input_to_commands(segments[i], &free_input, *env);
+                process_commands(cmds, env, global);
+                if (free_input)
+                    free_input = false;
+            }
+            i++;
+        }
+
+        // Liberar
+        i = 0;
+        while (segments[i])
+            free(segments[i++]);
+        free(segments);
+        free(input);
+    }
+
+    rl_clear_history();
+    return 0;
 }
+
 
 
 int main(int argc, char **argv, char **envp)

@@ -32,7 +32,7 @@ t_t		*tokens(char *input, bool *free_input, t_env *env)
 
 	while(t.input[t.pos] && !t.error)
 	{	
-		//ft_printf("t->pos:: %i\n", t.pos);
+	
 		quotes(&t);
 		if (t.single_quote || t.double_quote)
 			open_quotes(&t, &token_list, free_input);
