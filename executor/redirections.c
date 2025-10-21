@@ -113,8 +113,7 @@ void	create_heredoc_effective(const char *delimiter)
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			close(fd);
-			exit(130);  // ← CAMBIA DA 0 A 130!
+			break;
 		}
 		
 		// SALVA OGNI LINEA NELLA HISTORY!
@@ -224,22 +223,18 @@ void	handle_child_cmd_path(t_command *cmd, t_env *env)
 	char	*cmd_path;
 	char 	**argv_filtered;
 
-    if (!cmd || !cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
-    {
-        //ft_putstr_fd("minishell: invalid command structure\n", 2);
-        exit(1);
-    }
+    // if (!cmd || !cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
+    // {
+    //     ft_putstr_fd("minishell: invalid command structure\n", 2);
+    //     exit(1);
+    // }
 	cmd_path = get_command_path(cmd->argv[0], env);
 	if (!cmd_path)
-	{
-		free_command_l(cmd);/////////////////////////////////////////////
 		command_not_found(cmd);
-	}
 	if (is_builtin(cmd))
 	{
 		free(cmd_path);
 		exec_builtin(cmd, &env);
-		free_command_l(cmd);///////////////////////////////
 		exit(g_exit_status);
 	}
 	else
@@ -385,6 +380,9 @@ void	sigdfl_handle_child_process(t_command *cmd, int prev_fd, int *pipe_fd,
 	handle_child_process(cmd, prev_fd, pipe_fd, env);
 }
 
+
+
+
 void exec_command_list(t_command *cmd_list, t_env *env, t_global *g)
 {
     t_command *cmd = cmd_list;
@@ -403,7 +401,6 @@ void exec_command_list(t_command *cmd_list, t_env *env, t_global *g)
         {
             perror("pipe");
             if (prev_fd != -1) close(prev_fd);
-			free_command_l(cmd_list);
             return;
         }
         pid = fork();
@@ -413,7 +410,6 @@ void exec_command_list(t_command *cmd_list, t_env *env, t_global *g)
             if (prev_fd != -1) close(prev_fd);
             if (pipe_fd[0] != -1) close(pipe_fd[0]);
             if (pipe_fd[1] != -1) close(pipe_fd[1]);
-			free_command_l(cmd_list);
             return;
         }
         last_pid = pid;
@@ -439,17 +435,4 @@ void exec_command_list(t_command *cmd_list, t_env *env, t_global *g)
         }
     }
     wait_for_children(last_pid);
-}
-
-void	free_redirections(t_redir *redir)
-{
-	t_redir	*tmp;
-	
-	while (redir)
-	{
-		tmp = redir;
-		redir = redir->next;
-		free(tmp->filename);
-		free(tmp); 
-	}
 }
