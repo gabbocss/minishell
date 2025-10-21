@@ -283,7 +283,6 @@ void add_token(t_t *t, t_t **token_list)
 		return ;
 	size_t	len;
 	t_t *new_token;
-	int check_memory;
 	int	redir_control;
 
 	redir_control = 0;
@@ -305,8 +304,7 @@ void add_token(t_t *t, t_t **token_list)
 		t->anchor_pos++;
 		return;
 	}
-	check_memory = alloc_new_token(&new_token, len);
-	if (check_memory == 0)
+	if (!alloc_new_token(&new_token, len))
 		return ;
 	ft_strlcpy(new_token->value, t->start + t->anchor_pos, len +1);
 	if (t->tmp_token)

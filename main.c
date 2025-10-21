@@ -35,6 +35,28 @@ t_env	*init_env(void)
 	return (env);
 }
 
+// t_env *copy_env(char **envp)
+// {
+//     t_env *env = NULL;
+//     int i = 0;
+//     char *eq;
+
+//     while (envp[i])
+//     {
+//         eq = ft_strchr(envp[i], '=');
+//         if (eq)
+//         {
+//             char *key = ft_substr(envp[i], 0, eq - envp[i]);
+//             char *value = ft_strdup(eq + 1);
+//             add_env(&env, key, value, 1);
+//             free(key);
+//             free(value);
+//         }
+//         i++;
+//     }
+//     return env;
+// }
+
 t_env *copy_env(char **envp)
 {
     t_env *env = NULL;
@@ -48,9 +70,8 @@ t_env *copy_env(char **envp)
         {
             char *key = ft_substr(envp[i], 0, eq - envp[i]);
             char *value = ft_strdup(eq + 1);
-            add_env(&env, key, value, 1);
-            free(key);
-            free(value);
+            add_env_nocopy(&env, key, value, 1);  // ✅ Nessuna copia aggiuntiva
+            // NON free(key) e free(value) - add_env_nocopy se ne occupa
         }
         i++;
     }
@@ -255,9 +276,15 @@ void	exec_and_wait(t_command *cmds, char *cmd_path, char **envp)
 			g_exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 			g_exit_status = 128 + WTERMSIG(status);
+		if (envp)
+			free_env_array(envp);
 	}
 	else
+	{
 		perror("fork");
+		if (envp)
+			free_env_array(envp);
+	}
 	free(cmd_path);
 }
 
@@ -376,8 +403,12 @@ void process_commands(t_command *cmds, t_env **env, t_global *global)
 
 void	cleanup_resources(t_env *env, t_global *global)
 {
-	free_env(env);
-	free(global);
+	if (env)
+		free_env(env);
+	if (global)
+		free(global);
+	rl_clear_history();
+	unlink(".heredoc_tmp");
 }
 
 bool	only_spaces_after_pipe(char *pp)
@@ -521,8 +552,8 @@ int main(int argc, char **argv, char **envp)
 		t_command *cmds = parse_input_to_commands(input_copy, &free_input, env);
 		process_commands(cmds, &env, global);
 
-		if (free_input)
-			free(input_copy);
+		//if (free_input)
+		free(input_copy);
 
 		cleanup_resources(env, global);
 		return g_exit_status;

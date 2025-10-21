@@ -205,4 +205,6 @@ t_command *init_command(void);
 
 void apply_redir_heredoc(void);
 
+int	add_env_nocopy(t_env **env, char *key, char *value, int exportable);
+
 # endif
