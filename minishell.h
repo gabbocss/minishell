@@ -142,6 +142,7 @@ bool		check_redirs(char pos);
 void		free_command_args(t_command *cmd);
 void		free_paths(char **paths);
 void        free_command_l(t_command *cmd_list);
+void		free_env_list(t_env *head);
 
 int	builtin_cd(char **args, t_env **env);
 void	builtin_env(t_env *env);
@@ -169,9 +170,9 @@ int builtin_pwd(void);
 int is_option_n(const char *str);
 int builtin_echo(t_command *cmd);
 
-void apply_redirections(t_command *cmd);
+void apply_redirections(t_command *cmd, t_env *env);
 void apply_redir_in1(t_redir *r);
-void apply_redir_out1(t_redir *r);
+void	apply_redir_out1(t_redir *r, t_env *env);
 void apply_redir_out2(t_redir *r);
 char *mini_getline(const char *prompt);
 void create_heredoc_open(const char *delimiter, t_global *g);

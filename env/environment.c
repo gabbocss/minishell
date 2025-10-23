@@ -45,6 +45,7 @@ int	update_env(t_env **env, const char *key, const char *value)
 	new_val = ft_strdup(value);
 	if (!new_val)
 		return (0);
+	ft_printf("new_val:: %s\n", new_val);
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
