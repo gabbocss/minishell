@@ -10,7 +10,7 @@ t_command	*parse(t_t *token)
 	cmd_list = parse_commands(token);
 	if (!cmd_list)
 		return (NULL);
-	print_commands(cmd_list);
+	//print_commands(cmd_list);
 	return (cmd_list);
 }
 

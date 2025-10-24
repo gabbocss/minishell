@@ -170,14 +170,15 @@ int builtin_pwd(void);
 int is_option_n(const char *str);
 int builtin_echo(t_command *cmd);
 
-void apply_redirections(t_command *cmd, t_env *env);
+void	cleanup_resources(t_env *env, t_global *global);
+void apply_redirections(t_command *cmd, t_env *env, t_global *global);
 void apply_redir_in1(t_redir *r);
-void	apply_redir_out1(t_redir *r, t_env *env);
+void	apply_redir_out1(t_redir *r, t_env *env, t_command *cmd, t_global *global);
 void apply_redir_out2(t_redir *r);
 char *mini_getline(const char *prompt);
 void create_heredoc_open(const char *delimiter, t_global *g);
 void create_heredoc_effective(const char *delimiter);
-void handle_child_process(t_command *cmd, int prev_fd, int pipe_fd[], t_env *env);
+void handle_child_process(t_command *cmd, int prev_fd, int pipe_fd[], t_env *env, t_global *global);
 void handle_parent_process(int *prev_fd, int pipe_fd[]);
 void setup_pipe(t_command *cmd, int pipe_fd[]);
 void fork_process(pid_t *pid);
