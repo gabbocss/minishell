@@ -495,6 +495,7 @@ int main_loop(t_env **env, t_global *global)
 	}
 	rl_clear_history();
 
+
 	return 0;
 }
 
@@ -551,6 +552,7 @@ int main(int argc, char **argv, char **envp)
 	
 	// Modo interactivo normal
 	main_loop(&env, global);
+
 	cleanup_resources(env, global);
 	
 	return 0;
