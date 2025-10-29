@@ -246,7 +246,7 @@ bool	expand_exit_status(t_t *t)
 		return (0);
 }
 
-void	exec_and_wait(t_command *cmds, char *cmd_path, char **envp)
+int	exec_and_wait(t_command *cmds, char *cmd_path, char **envp)
 {
 	int		status;
 	pid_t	pid;
@@ -254,14 +254,11 @@ void	exec_and_wait(t_command *cmds, char *cmd_path, char **envp)
 	pid = fork();
 	if (pid == 0)
 	{
-				//		printf("DEBUG:   EXEC AND WAIT PID == 0");
-		//apply_redirections(cmds);
 		execve(cmd_path, cmds->argv, envp);
 		perror("execve");
 		if (envp)
 			free_env_array(envp);
-		free(cmd_path);
-		exit(EXIT_FAILURE);
+		return (0);
 	}
 	else if (pid > 0)
 	{
@@ -274,9 +271,10 @@ void	exec_and_wait(t_command *cmds, char *cmd_path, char **envp)
 	else
 		perror("fork");
 	free(cmd_path);
+	return (1);
 }
 
-void	exec_single_non_builtin(t_command *cmds, t_env **env)
+void	exec_single_non_builtin(t_command *cmds, t_env **env, t_global *g)//aggiunta global
 {
 	char	*cmd_path;
 	char	**envp;
@@ -285,7 +283,12 @@ void	exec_single_non_builtin(t_command *cmds, t_env **env)
 	cmd_path = get_command_path(cmds->argv[0], *env);
 	if (cmd_path)
 	{
-		exec_and_wait(cmds, cmd_path, envp);
+		if(exec_and_wait(cmds, cmd_path, envp))
+		{
+			free_command_l(cmds);
+			cleanup_resources(*env, g);
+			exit(EXIT_FAILURE);
+		}
 	}
 	else if (ft_strcmp(cmds->argv[0], ".") == 0)
 	{
@@ -370,25 +373,25 @@ t_command *parse_input_to_commands(char *input, bool *free_input, t_env *env)
 	return (cmd);
 }
 
-void	execute_single_command(t_command *cmds, t_env **env)
+void	execute_single_command(t_command *cmds, t_env **env, t_global *g)//AGGIUNTA g
 {
 	if (is_builtin(cmds))
 		exec_builtin(cmds, env);
 	else
-		exec_single_non_builtin(cmds, env);
+		exec_single_non_builtin(cmds, env, g);
 }
 
 void process_commands(t_command *cmds, t_env **env, t_global *global)
 {
 	if (!cmds)
 		return;
-	if (ft_strcmp(cmds->argv[0], "exit") == 0)
+	if (cmds->argv && ft_strcmp(cmds->argv[0], "exit") == 0)
 	{
 		cleanup_resources(*env, global);
 		builtin_exit(cmds);
 	}
 	if (!has_pipe_or_redir(cmds))
-		execute_single_command(cmds, env);  // Passa env come doppio puntatore
+		execute_single_command(cmds, env, global);  // Passa env come doppio puntatore
 	else
 		exec_command_list(cmds, *env, global);  // Dereferenzia env	
 	free_command_l(cmds);
@@ -486,6 +489,11 @@ int main_loop(t_env **env, t_global *global)
 		}
 		process_input_history(input);
 		cmds = parse_input_to_commands(input, &free_input, *env);
+		if(!cmds)
+		{
+			free_command_l(cmds);
+			
+		}
 		process_commands(cmds, env, global);
 		if (free_input)
 		{

@@ -5,8 +5,7 @@ stampa exit
 
 
 LEAKS
-
-echo a > b
+valgrind --leak-check=full --show-leak-kinds=all --suppressions=readline.supp --suppressions=executables.supp ./minishell
 
 << a
 b
