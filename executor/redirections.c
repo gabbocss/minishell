@@ -35,11 +35,27 @@ void	apply_redir_in1(t_redir *r, t_env *env, t_command *cmd)
 	fd = open(r->filename, O_RDONLY);
 	if (fd < 0)
 	{
-		perror(r->filename);
-		free_env(env);
-		free_command_l(cmd);
-		cmd = NULL;
-		exit(EXIT_FAILURE);
+		if (errno == ENOENT)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(r->filename, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			g_exit_status = 1;
+		}
+		else if (errno == ENOTDIR)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(r->filename, 2);
+			ft_putstr_fd(": Not a directory\n", 2);
+			g_exit_status = 1;
+		}
+		else
+		{
+			perror(r->filename);
+			g_exit_status = 1;
+		}
+		free_env_cmdl_null(env, &cmd);
+		exit(g_exit_status);
 	}
 	dup2(fd, STDIN_FILENO);
 	close(fd);
@@ -52,38 +68,51 @@ void	apply_redir_out1(t_redir *r, t_env *env, t_command *cmd)
 	fd = open(r->filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0)
 	{
-		perror(r->filename);
-		free_env(env);
-		free_command_l(cmd);
-		cmd = NULL;
-		exit(EXIT_FAILURE);
+		if (errno == ENOTDIR)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(r->filename, 2);
+			ft_putstr_fd(": Not a directory\n", 2);
+			g_exit_status = 1;
+		}
+		else
+		{
+			perror(r->filename);
+			g_exit_status = 1;
+		}
+		free_env_cmdl_null(env, &cmd);
+		exit(g_exit_status);
 	}
 	if (r->next && (r->next->type == REDIR_OUT || r->next->type == REDIR_APPEND))
-	{
-		//printf("DEBUG 222222222\n\n");
 		close(fd);
-	}
 	else
 	{
-		//printf("DEBUG 3333333\n\n");
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
-		//close(STDOUT_FILENO);
 	}
 }
 
-void	apply_redir_out2(t_redir *r, t_command *cmd, t_env *env) // aggiunti env, glbal, command
+void	apply_redir_out2(t_redir *r, t_command *cmd, t_env *env)
 {
 	int	fd;
 
 	fd = open(r->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 	{
-		perror(r->filename);
-		free_command_l(cmd);//aggiunta riga
-		cmd = NULL;
-		free_env(env);//aggiunta riga
-		exit(EXIT_FAILURE);
+		if (errno == ENOTDIR)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(r->filename, 2);
+			ft_putstr_fd(": Not a directory\n", 2);
+			g_exit_status = 1;
+		}
+		else
+		{
+			perror(r->filename);
+			g_exit_status = 1;
+		}
+		free_env_cmdl_null(env, &cmd);
+		exit(g_exit_status);
 	}
 	if (r->next && (r->next->type == REDIR_OUT || r->next->type == REDIR_APPEND))
 		close(fd);
@@ -94,7 +123,7 @@ void	apply_redir_out2(t_redir *r, t_command *cmd, t_env *env) // aggiunti env, g
 	}
 }
 
-void apply_redir_heredoc(t_command *cmd, t_env *env) // aggiunti tutti gli argom
+void apply_redir_heredoc(t_command *cmd, t_env *env)
 {
 	int fd;
 
@@ -102,46 +131,40 @@ void apply_redir_heredoc(t_command *cmd, t_env *env) // aggiunti tutti gli argom
 	if (fd < 0)
 	{
 		perror(".heredoc_tmp");
-		free_command_l(cmd);//aggiunta riga
-		free_env(env);//aggiunta riga
+		free_env_cmdl_null(env, &cmd);
 		exit(EXIT_FAILURE);
 	}
 	dup2(fd, STDIN_FILENO);
 	close(fd);
 }
 
-void	create_heredoc_effective(const char *delimiter, t_command *cmd, t_env *env)//aggunti i tre
+void	create_heredoc_effective(const char *delimiter, t_command *cmd, t_env *env)
 {
 	int		fd;
 	char	*line;
+
 	fd = open(".heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 	{
 		perror("open .heredoc_tmp");
-		free_command_l(cmd);//aggiunta riga
-		free_env(env);//aggiunta riga
+		free_env_cmdl_null(env, &cmd);
 		exit(1);
 	}
 	signal(SIGINT, heredoc_sigint_handler);
-
 	while (1)
 	{
 		line = readline("> ");
 		if (g_exit_status == 130)
 		{
-			free_command_l(cmd);
-			free_env(env);
+			free_env_cmdl_null(env, &cmd);
 			exit(130);
 		}
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			rl_clear_history();
-			
 			break;
 		}
-
-		// SALVA OGNI LINEA NELLA HISTORY!
 		if (*line)
 			add_history(line);
 
@@ -155,16 +178,13 @@ void	create_heredoc_effective(const char *delimiter, t_command *cmd, t_env *env)
 		fsync(fd);
 		free(line);
 	}
-
 	close(fd);
-	free_command_l(cmd);//aggiunta riga
-	free_env(env);//aggiunta riga
+	free_env_cmdl_null(env, &cmd);
 	exit(0);
 }
 
-void	heredoc_open_interrupted(int status, bool *hrd_interrupted)/////////////////////////////////////////// /   / ////////// /
+void	heredoc_open_interrupted(int status, bool *hrd_interrupted)
 {
-	
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
 	{
 		*hrd_interrupted = true;
@@ -179,7 +199,7 @@ void	heredoc_open_interrupted(int status, bool *hrd_interrupted)////////////////
 	}
 }
 
-void	create_heredoc_open(const char *delimiter, t_command *cmd, t_env *env, bool *hrd_interrupted)//aggiunti cmd env
+void	create_heredoc_open(const char *delimiter, t_command *cmd, t_env *env, bool *hrd_interrupted)
 {
 	
 	pid_t	pid;
@@ -193,78 +213,19 @@ void	create_heredoc_open(const char *delimiter, t_command *cmd, t_env *env, bool
 		return ;
 	}
 	if (pid == 0)
-		create_heredoc_effective(delimiter, cmd, env); //aggiunti cmd env
-	
+		create_heredoc_effective(delimiter, cmd, env);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, sigint_handler);
-	
 	heredoc_open_interrupted(status, hrd_interrupted);
-	//free_env(env);
-	//free_command_l(cmd);
 }
 
-// void	heredoc_open_interrupted(int status, bool *hrd_interrupted, t_command *cmd, t_env **env)
-// {
-// 	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
-// 	{
-// 		*hrd_interrupted = true;
-// 		g_exit_status = 130;
-// 		unlink(".heredoc_tmp");
-		
-// 		// PULIZIA MEMORIA
-// 		if (cmd)
-// 			free_command_l(cmd);
-// 		if (env && *env)
-// 		{
-// 			free_env(*env);
-// 			*env = NULL;
-// 		}
-// 	}
-// 	else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-// 	{
-// 		*hrd_interrupted = true;
-// 		g_exit_status = 130;
-// 		unlink(".heredoc_tmp");
-		
-// 		// PULIZIA MEMORIA
-// 		if (cmd)
-// 			free_command_l(cmd);
-// 		if (env && *env)
-// 		{
-// 			free_env(*env);
-// 			*env = NULL;
-// 		}
-// 	}
-// }
-
-// void	create_heredoc_open(const char *delimiter, t_command *cmd, t_env **env, bool *hrd_interrupted)
-// {
-// 	pid_t	pid;
-// 	int		status;
-
-// 	signal(SIGINT, SIG_IGN);
-// 	pid = fork();
-// 	if (pid < 0)
-// 	{
-// 		perror("fork");
-// 		return ;
-// 	}
-// 	if (pid == 0)
-// 		create_heredoc_effective(delimiter, cmd, *env);
-// 	waitpid(pid, &status, 0);
-// 	signal(SIGINT, sigint_handler);
-// 	heredoc_open_interrupted(status, hrd_interrupted, cmd, env);
-// }
-
-void	command_not_found(t_command *cmd, t_env *env) // aggiunti g e env
+void	command_not_found(t_command *cmd, t_env *env)
 {
 	if (cmd->argv)
 		ft_putstr_fd(cmd->argv[0], 2);
 	ft_putstr_fd(": command not found\n", 2);
 	g_exit_status = 127;
-	free_command_l(cmd);//aggiunta riga
-	cmd = NULL;
-	free_env(env);//aggiunta riga
+	free_env_cmdl_null(env, &cmd);
 	exit(g_exit_status);
 }
 
@@ -281,7 +242,7 @@ void	filter_args_fill(t_command *cmd, char ***argv_filtered, int count, int *j)
 	}
 }
 
-void	filter_args(t_command *cmd, char ***argv_filtered, t_env *env)// aggiunti i env e g
+void	filter_args(t_command *cmd, char ***argv_filtered, t_env *env)
 {
 	int count;
 	int argc_new;
@@ -302,9 +263,7 @@ void	filter_args(t_command *cmd, char ***argv_filtered, t_env *env)// aggiunti i
 	*argv_filtered = (char **)malloc(sizeof(char *) * (argc_new + 1));
 	if (!*argv_filtered)
 	{
-		free_command_l(cmd);//aggiunta riga
-		cmd = NULL;
-		free_env(env);//aggiunta riga
+		free_env_cmdl_null(env, &cmd);
 		exit(1);
 	}
 	j = 0;
@@ -312,43 +271,74 @@ void	filter_args(t_command *cmd, char ***argv_filtered, t_env *env)// aggiunti i
 	(*argv_filtered)[j] = NULL;
 }
 
+void handle_child_cmd_path_exec_non_builtin(t_command *cmd, t_env *env, 
+		char *cmd_path, char **argv_filtered)
+{
+	struct stat statbuf;
+	
+	if (stat(cmd_path, &statbuf) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(argv_filtered);
+		free(cmd_path);
+		exit(127);
+	}
+	if (S_ISDIR(statbuf.st_mode))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_path, 2);
+		ft_putstr_fd(": Is a directory\n", 2);
+		free(argv_filtered);
+		free(cmd_path);
+		exit(126);
+	}
+	if (access(cmd_path, X_OK) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_path, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
+		free(argv_filtered);
+		free(cmd_path);
+		exit(126);
+	}
+	filter_args(cmd, &argv_filtered, env);
+	execve(cmd_path, argv_filtered, convert_env_list_to_array(env));
+
+	perror(cmd_path);  // Cambia "execve" in cmd_path777777777777777777777777777777777777777777777777777777777777777
+	
+	free(argv_filtered);
+	free(cmd_path);
+	exit(1);
+}
+
 void	handle_child_cmd_path(t_command *cmd, t_env *env)
 {
 	char	*cmd_path;
 	char	**argv_filtered;
 
+	argv_filtered = NULL;
 	if (cmd->argv)
 		cmd_path = get_command_path(cmd->argv[0], env);
 	else
 		cmd_path = NULL;
+	
 	if (!cmd_path)
-		command_not_found(cmd, env);
+		command_not_found(cmd, env);  // Exit 127
 	if (is_builtin(cmd))
 	{
 		free(cmd_path);
 		exec_builtin(cmd, &env);
-		free_env(env);
-		free_command_l(cmd);
-		cmd = NULL;
+		free_env_cmdl_null(env, &cmd);
 		exit(g_exit_status);
 	}
 	else
-	{
-		filter_args(cmd, &argv_filtered, env);
-		execve(cmd_path, argv_filtered, convert_env_list_to_array(env));
-		perror("execve");
-		free(argv_filtered);
-		free(cmd_path);
-		free_env(env);//aggiunta riga
-		free_command_l(cmd);//aggiunta riga
-		cmd = NULL;
-		exit(126);
-	}
+		handle_child_cmd_path_exec_non_builtin(cmd, env, cmd_path, argv_filtered);
 }
 
 void	handle_child_process(t_command *cmd, t_p_fd p_fd, t_env *env)
 {
-	//int prev_fd = -1; //creato adesso
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 
@@ -383,18 +373,15 @@ void	handle_parent_process(int *prev_fd, int pipe_fd[])
 	}
 }
 
-void	setup_pipe(t_command *cmd, int pipe_fd[], t_env *env)//aggiunto hrd_interrupted e env
+void	setup_pipe(t_command *cmd, int pipe_fd[], t_env *env)
 {
 	if (cmd->next && pipe(pipe_fd) == -1)
 	{
 		perror("pipe");
-		free_env(env);//aggiunta riga
-		free_command_l(cmd);//aggiunta riga
-		cmd = NULL;
+		free_env_cmdl_null(env, &cmd);
 		exit(EXIT_FAILURE);
 	}
 }
-
 
 void wait_for_children(pid_t last_pid)
 {
@@ -417,12 +404,10 @@ void wait_for_children(pid_t last_pid)
 		perror("waitpid");
 }
 
-
-
-
-int	is_cmd_redir_in_2(t_command *cmd, int prev_fd, t_env *env, bool *hrd_interrupted) // aggiunto env
+int	is_cmd_redir_in_2(t_command *cmd, int prev_fd, t_env *env, bool *hrd_interrupted)
 {
 	t_redir	*r;
+
 	r = cmd->redirs;
 	while (r)
 	{
@@ -432,7 +417,6 @@ int	is_cmd_redir_in_2(t_command *cmd, int prev_fd, t_env *env, bool *hrd_interru
 			if (*hrd_interrupted)
 			{
 				*hrd_interrupted = false;
-				//ft_printf("prev_fd:: %i\n", prev_fd);
 				if (prev_fd != -1)
 					close(prev_fd);
 				return (1);
@@ -440,8 +424,6 @@ int	is_cmd_redir_in_2(t_command *cmd, int prev_fd, t_env *env, bool *hrd_interru
 		}
 		r = r->next;
 	}
-	//free_env(env);
-	//free_command_l(cmd);
 	return (0);
 }
 
@@ -509,9 +491,7 @@ void exec_command_list(t_command *cmd_list, t_env *env, bool *g)
 			signal(SIGINT, SIG_DFL);
 			signal(SIGQUIT, SIG_DFL);
 			handle_child_process(cmd, p_fd, env);
-			free_env(env);
-			free_command_l(cmd_list);
-			cmd_list = NULL;
+			free_env_cmdl_null(env, &cmd_list);
 			exit(1);
 		}
 		else //genitore

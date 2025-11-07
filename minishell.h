@@ -144,6 +144,24 @@ void		free_command_args(t_command *cmd);
 void		free_paths(char **paths);
 void		free_command_l(t_command *cmd_list);
 void		free_env_list(t_env *head);
+bool		handle_lonely_dollar(t_t *t, t_t **token_list);
+void		handle_exit_status_case(t_t *t, t_t **token_list);
+void		add_redir(t_command *cmd, int type, const char *filename);
+void		handle_redir_token(t_command **current, t_command **head,
+	t_t **token);
+void		handle_pipe_token(t_command **current, t_command **head, t_t *token);
+void		handle_word_or_var(t_command *current, t_t *token, t_t *prev);
+void		handle_word_or_var_token(t_command **current, t_t *token);
+void		handle_pipe_or_redir(t_command **current, t_command **head,
+	t_t *token);
+bool		is_redir_token(int type);
+void		handle_single_quote(t_t *t, t_t **token_list, bool *free_input);
+void		handle_double_quote(t_t *t, t_t **token_list, bool *free_input);
+char		*create_end_str(char *str1, char *str2);
+void		handle_first_quote_case(t_t *t, bool *free_input);
+void		handle_middle_quote_case(t_t *t, t_t **token_list);
+void		add_argument_alloc(t_command *cmd, char ***new_argv,
+	bool **new_arg_is_redir, int count);
 
 int	builtin_cd(char **args, t_env **env);
 void	builtin_env(t_env *env);
@@ -158,7 +176,7 @@ int	builtin_export(char **args, t_env **env);
 int	is_valid_identifier(const char *str);
 int	unset_env(t_env **env, char *key);
 int	builtin_unset(char **args, t_env **env);
-void	free_env(t_env *env);
+
 char	*get_env_value(t_env *env, const char *key);
 int	mark_as_exportable(t_env **env, char *key);
 t_env	*create_env_node(char *key, char *value, int exportable);
@@ -191,7 +209,6 @@ void exec_command_list(t_command *cmd_list, t_env *env, bool *hrd_interrupted);
 char *get_command_path(char *cmd, t_env *env);
 char	**convert_env_list_to_array(t_env *env);
 bool is_builtin(t_command *cmd);
-//void	exec_single_simple_command(t_command *cmds, t_env **env);
 void	exec_builtin(t_command *cmds, t_env **env);
 void	exec_single_non_builtin(t_command *cmds, t_env **env);
 void	builtin_exit(t_command *cmd);
@@ -210,5 +227,12 @@ void init_shlvl(t_env **env);
 t_command *init_command(void);
 
 void	free_env_array(char **envp);
+
+void	free_env_cmdl_null(t_env *env, t_command **cmd_list);
+
+//int	is_edge_case(t_command *cmds);
+bool first_arg_is_one_dot(char *arg);
+bool first_arg_is_all_dots(char *arg);
+bool first_arg_is_dot_slash(char *arg);
 
 # endif
